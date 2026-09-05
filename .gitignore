@@ -1,0 +1,3 @@
+# scripts/generate_all_slides.py の中間出力・作業用ディレクトリ（再生成可能なので追跡しない）
+scripts/output/
+scripts/materials

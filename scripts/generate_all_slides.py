@@ -374,6 +374,105 @@ def build_post7(materials_dir=SRC, out_dir=OUT):
     )
 
 
+# ==================== post8「面貸し先の選び方」 ====================
+# 8枚構成。post7 と同じ関数群の組み合わせで作成。
+
+def build_post8(materials_dir=SRC, out_dir=OUT):
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+
+    beige_path = f"{materials_dir}/beige_texture.png"
+    logo_path = f"{materials_dir}/logo.jpeg"
+
+    # 背景生成
+    make_cover_bg(beige_path, f"{out_dir}/post8_bg_cover.jpg")
+    for i in range(2, 9):
+        make_logo_bg(logo_path, base_shade=224, seed=i + 200,
+                     out_path=f"{out_dir}/post8_bg_slide{i}.jpg")
+
+    # 1枚目: 表紙
+    draw_cover_slide(
+        f"{out_dir}/post8_bg_cover.jpg", f"{out_dir}/post8_final_slide1.jpg",
+        ["面貸し先の選び方", "5つのチェックポイント"],
+        subtitle="piece201 / Nakameguro, Tokyo"
+    )
+
+    # 2枚目: 導入
+    draw_title_body_slide(
+        f"{out_dir}/post8_bg_slide2.jpg", f"{out_dir}/post8_final_slide2.jpg",
+        title=None,
+        body_lines=[
+            "面貸しは、一度契約すると", "途中で変えるのは大変。", "",
+            "契約前に見ておきたい、", "5つのチェックポイントをまとめました。"
+        ],
+        body_color=DARK
+    )
+
+    # 3枚目: ①契約内容の明確さ
+    draw_title_body_slide(
+        f"{out_dir}/post8_bg_slide3.jpg", f"{out_dir}/post8_final_slide3.jpg",
+        title="①契約内容の明確さ",
+        body_lines=[
+            "歩合率だけでなく、", "材料費や水道光熱費の負担、",
+            "契約書の有無まで確認を。", "",
+            "口約束だけで始めるのは", "トラブルのもとです。"
+        ]
+    )
+
+    # 4枚目: ②集客サポートの有無
+    draw_title_body_slide(
+        f"{out_dir}/post8_bg_slide4.jpg", f"{out_dir}/post8_final_slide4.jpg",
+        title="②集客サポートの有無",
+        body_lines=[
+            "面貸しは自分の指名客のみ対応で、", "完全歩合60〜70%が相場。", "",
+            "業務委託寄りになると、", "サロンが新規集客を担う代わりに",
+            "歩合はやや下がります。", "",
+            "自分の指名客だけで回せるか、", "も判断材料になります。"
+        ]
+    )
+
+    # 5枚目: ③技術レベル・雰囲気
+    draw_title_body_slide(
+        f"{out_dir}/post8_bg_slide5.jpg", f"{out_dir}/post8_final_slide5.jpg",
+        title="③技術レベル・雰囲気",
+        body_lines=[
+            "在籍しているスタイリストの", "レベル感や雰囲気も大事なポイント。", "",
+            "横のコミュニケーションが", "取りやすい環境かどうかも",
+            "確認しておきたいところです。"
+        ]
+    )
+
+    # 6枚目: ④設備・立地
+    draw_title_body_slide(
+        f"{out_dir}/post8_bg_slide6.jpg", f"{out_dir}/post8_final_slide6.jpg",
+        title="④設備・立地",
+        body_lines=[
+            "駅からの距離、席数、", "設備の充実度。", "",
+            "日々の働きやすさに", "直結するポイントです。"
+        ]
+    )
+
+    # 7枚目: ⑤税務・保険サポート
+    draw_title_body_slide(
+        f"{out_dir}/post8_bg_slide7.jpg", f"{out_dir}/post8_final_slide7.jpg",
+        title="⑤税務・保険サポート",
+        body_lines=[
+            "確定申告や保険まわり、", "わからないときに相談できる",
+            "体制があるかどうかも", "見ておくと安心です。"
+        ]
+    )
+
+    # 8枚目: 締め
+    draw_closing_slide(
+        f"{out_dir}/post8_bg_slide8.jpg", f"{out_dir}/post8_final_slide8.jpg",
+        lead_lines=["全部が完璧なサロンは", "なかなかありません。"],
+        body_lines=["自分が何を優先するかを決めておくことが、", "後悔しない選び方のコツです。"],
+        dm_line="気になる方はDMで"
+    )
+
+
 if __name__ == "__main__":
     build_post7()
     print("post7 done")
+    build_post8()
+    print("post8 done")
