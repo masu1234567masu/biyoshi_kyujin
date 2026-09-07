@@ -483,35 +483,37 @@ def build_post9(materials_dir=SRC, out_dir=OUT):
 
     # 背景生成
     make_cover_bg(beige_path, f"{out_dir}/post9_bg_cover.jpg")
-    for i in range(2, 8):
+    for i in range(2, 9):
         make_logo_bg(logo_path, base_shade=224, seed=i + 300,
                      out_path=f"{out_dir}/post9_bg_slide{i}.jpg")
 
     # 1枚目: 表紙
     draw_cover_slide(
         f"{out_dir}/post9_bg_cover.jpg", f"{out_dir}/post9_final_slide1.jpg",
-        ["自由出勤の働き方", "3つのリアル例"],
+        ["自由出勤の働き方", "5つのリアル例"],
         subtitle="piece201 / Nakameguro, Tokyo"
     )
 
-    # 2枚目: 導入
+    # 2枚目: 導入+目次
     draw_title_body_slide(
         f"{out_dir}/post9_bg_slide2.jpg", f"{out_dir}/post9_final_slide2.jpg",
         title=None,
         body_lines=[
             "自由出勤とは、", "出勤する曜日・時間を", "自分で決められる働き方。", "",
-            "ライフスタイルに合わせて、", "働き方そのものを設計できます。"
+            "ライフスタイルに合わせて、", "働き方そのものを設計できます。", "",
+            "①がっつり稼ぐ集中型", "②掛け持ち・副業型", "③午後・夜型",
+            "④子育てと両立型", "⑤長期休暇活用型"
         ],
         body_color=DARK
     )
 
-    # 3枚目: ①子育てと両立型
+    # 3枚目: ①がっつり稼ぐ集中型
     draw_title_body_slide(
         f"{out_dir}/post9_bg_slide3.jpg", f"{out_dir}/post9_final_slide3.jpg",
-        title="①子育てと両立型",
+        title="①がっつり稼ぐ集中型",
         body_lines=[
-            "月・水・金 9:00-13:00 出勤", "火・木・土日 お休み", "",
-            "保育園に預けている時間だけ働き、", "それ以外は家族の時間にあてるスタイル。"
+            "週6日、フルタイムで", "稼働するスタイル。", "",
+            "稼働日数を増やして、", "短期間で売上を伸ばしたい人向け。"
         ]
     )
 
@@ -520,38 +522,48 @@ def build_post9(materials_dir=SRC, out_dir=OUT):
         f"{out_dir}/post9_bg_slide4.jpg", f"{out_dir}/post9_final_slide4.jpg",
         title="②掛け持ち・副業型",
         body_lines=[
-            "月・火・木・金 出勤", "水 他サロンで勤務", "土日 お休み", "",
-            "複数の収入源を組み合わせて、", "1つのサロンに依存しないスタイル。"
+            "複数のサロンや副業と", "組み合わせるパターン。", "",
+            "週末だけ稼働する、", "週3日だけ固定で出勤するなど、",
+            "他の予定と組み合わせやすいのも", "自由出勤ならでは。"
         ]
     )
 
-    # 5枚目: ③がっつり稼ぐ集中型
+    # 5枚目: ③午後・夜型
     draw_title_body_slide(
         f"{out_dir}/post9_bg_slide5.jpg", f"{out_dir}/post9_final_slide5.jpg",
-        title="③がっつり稼ぐ集中型",
+        title="③午後・夜型",
         body_lines=[
-            "月〜土 10:00-19:00 出勤", "日 お休み", "",
-            "稼働日数を増やして、", "短期間で売上を伸ばしたい人向け。"
+            "朝はゆっくり、", "午後から夜にかけて", "稼働するスタイル。", "",
+            "自分の生活リズムに合わせて", "働く時間帯を選べます。"
         ]
     )
 
-    # 6枚目: まとめ
+    # 6枚目: ④子育てと両立型
     draw_title_body_slide(
         f"{out_dir}/post9_bg_slide6.jpg", f"{out_dir}/post9_final_slide6.jpg",
-        title=None,
+        title="④子育てと両立型",
         body_lines=[
-            "どのパターンが正解、", "というものはありません。", "",
-            "自分の生活・目標に合わせて", "働き方を設計できるのが、",
-            "自由出勤の一番の魅力です。"
-        ],
-        body_color=DARK
+            "月・水・金 9:00-13:00 出勤", "火・木・土日 お休み", "",
+            "保育園に預けている時間だけ働き、", "それ以外は家族の時間にあてるスタイル。"
+        ]
     )
 
-    # 7枚目: 締め
-    draw_closing_slide(
+    # 7枚目: ⑤長期休暇活用型
+    draw_title_body_slide(
         f"{out_dir}/post9_bg_slide7.jpg", f"{out_dir}/post9_final_slide7.jpg",
-        lead_lines=["自分に合った働き方、", "一緒に考えてみませんか。"],
-        body_lines=["出勤日数や時間帯の相談も", "気軽にしてください。"],
+        title="⑤長期休暇活用型",
+        body_lines=[
+            "稼働をまとめて調整すれば、", "1ヶ月休んで海外に研修に行ったり、",
+            "長期旅行を楽しんだりすることも可能。", "",
+            "決まった有給日数に縛られない、", "フリーランスならではの自由な休み方。"
+        ]
+    )
+
+    # 8枚目: まとめ+締め(1枚に統合)
+    draw_closing_slide(
+        f"{out_dir}/post9_bg_slide8.jpg", f"{out_dir}/post9_final_slide8.jpg",
+        lead_lines=["どのパターンが正解、", "というものはありません。"],
+        body_lines=["自分の生活に合わせて、", "働き方を設計できるのが一番の魅力です。"],
         dm_line="気になる方はDMで"
     )
 
