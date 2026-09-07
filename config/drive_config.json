@@ -1,0 +1,8 @@
+{
+  "project_id": "biyoshi-kyujin-autopost",
+  "service_account_email": "drive-uploader@biyoshi-kyujin-autopost.iam.gserviceaccount.com",
+  "service_account_key_path": "secrets/drive_service_account.json",
+  "upload_folder_id": "1vXdBGxduScs8Z38xVixR7KPH32UdkQ2x",
+  "metricool_brand_id": "6852890",
+  "timezone": "Asia/Tokyo"
+}
