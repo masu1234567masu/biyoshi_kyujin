@@ -471,8 +471,95 @@ def build_post8(materials_dir=SRC, out_dir=OUT):
     )
 
 
+# ==================== post9「自由出勤の働き方、3つのリアル例」 ====================
+# 7枚構成。post7/post8 と同じ関数群の組み合わせで作成。
+
+def build_post9(materials_dir=SRC, out_dir=OUT):
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+
+    beige_path = f"{materials_dir}/beige_texture.png"
+    logo_path = f"{materials_dir}/logo.jpeg"
+
+    # 背景生成
+    make_cover_bg(beige_path, f"{out_dir}/post9_bg_cover.jpg")
+    for i in range(2, 8):
+        make_logo_bg(logo_path, base_shade=224, seed=i + 300,
+                     out_path=f"{out_dir}/post9_bg_slide{i}.jpg")
+
+    # 1枚目: 表紙
+    draw_cover_slide(
+        f"{out_dir}/post9_bg_cover.jpg", f"{out_dir}/post9_final_slide1.jpg",
+        ["自由出勤の働き方", "3つのリアル例"],
+        subtitle="piece201 / Nakameguro, Tokyo"
+    )
+
+    # 2枚目: 導入
+    draw_title_body_slide(
+        f"{out_dir}/post9_bg_slide2.jpg", f"{out_dir}/post9_final_slide2.jpg",
+        title=None,
+        body_lines=[
+            "自由出勤とは、", "出勤する曜日・時間を", "自分で決められる働き方。", "",
+            "ライフスタイルに合わせて、", "働き方そのものを設計できます。"
+        ],
+        body_color=DARK
+    )
+
+    # 3枚目: ①子育てと両立型
+    draw_title_body_slide(
+        f"{out_dir}/post9_bg_slide3.jpg", f"{out_dir}/post9_final_slide3.jpg",
+        title="①子育てと両立型",
+        body_lines=[
+            "月・水・金 9:00-13:00 出勤", "火・木・土日 お休み", "",
+            "保育園に預けている時間だけ働き、", "それ以外は家族の時間にあてるスタイル。"
+        ]
+    )
+
+    # 4枚目: ②掛け持ち・副業型
+    draw_title_body_slide(
+        f"{out_dir}/post9_bg_slide4.jpg", f"{out_dir}/post9_final_slide4.jpg",
+        title="②掛け持ち・副業型",
+        body_lines=[
+            "月・火・木・金 出勤", "水 他サロンで勤務", "土日 お休み", "",
+            "複数の収入源を組み合わせて、", "1つのサロンに依存しないスタイル。"
+        ]
+    )
+
+    # 5枚目: ③がっつり稼ぐ集中型
+    draw_title_body_slide(
+        f"{out_dir}/post9_bg_slide5.jpg", f"{out_dir}/post9_final_slide5.jpg",
+        title="③がっつり稼ぐ集中型",
+        body_lines=[
+            "月〜土 10:00-19:00 出勤", "日 お休み", "",
+            "稼働日数を増やして、", "短期間で売上を伸ばしたい人向け。"
+        ]
+    )
+
+    # 6枚目: まとめ
+    draw_title_body_slide(
+        f"{out_dir}/post9_bg_slide6.jpg", f"{out_dir}/post9_final_slide6.jpg",
+        title=None,
+        body_lines=[
+            "どのパターンが正解、", "というものはありません。", "",
+            "自分の生活・目標に合わせて", "働き方を設計できるのが、",
+            "自由出勤の一番の魅力です。"
+        ],
+        body_color=DARK
+    )
+
+    # 7枚目: 締め
+    draw_closing_slide(
+        f"{out_dir}/post9_bg_slide7.jpg", f"{out_dir}/post9_final_slide7.jpg",
+        lead_lines=["自分に合った働き方、", "一緒に考えてみませんか。"],
+        body_lines=["出勤日数や時間帯の相談も", "気軽にしてください。"],
+        dm_line="気になる方はDMで"
+    )
+
+
 if __name__ == "__main__":
     build_post7()
     print("post7 done")
     build_post8()
     print("post8 done")
+    build_post9()
+    print("post9 done")
