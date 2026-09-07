@@ -568,9 +568,10 @@ Claude.ai（元のチャット）のサンドボックス環境はネットワ�
 
 ### 今後の運用フロー（確立済み）
 1. Claude.ai/Claude Codeで画像とキャプションを作成（`scripts/generate_all_slides.py`にpost関数を追加）
-2. `python3 scripts/drive_upload.py <画像ファイル...>` でDriveにアップロードし、公開URLを取得
+2. `python3 scripts/drive_upload.py <画像ファイル...>` でDriveにアップロードし、公開URLを取得（出力は`ファイルID<TAB>URL`の形式）
 3. Metricool MCPの`createScheduledPost`で、それらのURLとキャプションを渡して予約投稿を作成
-4. 「自動で投稿して」と言われたタイミングで、上記2〜3をClaude Codeが実行する運用
+4. レスポンスの`media`が`static.metricool.com`のURLに変換されていることを確認できたら、Metricool側への取り込みは完了しているので、Drive容量節約のため元ファイルを削除する：`python3 scripts/drive_upload.py delete <ファイルID...>`
+5. 「自動で投稿して」と言われたタイミングで、上記2〜4をClaude Codeが実行する運用
 
 ---
 

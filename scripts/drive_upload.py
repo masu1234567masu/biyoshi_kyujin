@@ -49,7 +49,7 @@ def get_drive_service(config):
 
 
 def upload_file(local_path, config, service=None):
-    """1ファイルをDriveの指定フォルダにアップロードし、公開閲覧URLを返す。"""
+    """1ファイルをDriveの指定フォルダにアップロードし、{id, url} を返す。"""
     service = service or get_drive_service(config)
 
     file_metadata = {
@@ -68,20 +68,42 @@ def upload_file(local_path, config, service=None):
     ).execute()
 
     # Metricool 等の外部サービスが直接ダウンロードできる形式のURL
-    return f"https://drive.google.com/uc?export=download&id={file_id}"
+    url = f"https://drive.google.com/uc?export=download&id={file_id}"
+    return {"id": file_id, "url": url}
 
 
 def upload_files(local_paths, config=None):
-    """複数ファイルをまとめてアップロードし、URLのリストを返す。"""
+    """複数ファイルをまとめてアップロードし、{id, url} のリストを返す。"""
     config = config or load_config()
     service = get_drive_service(config)
     return [upload_file(p, config, service=service) for p in local_paths]
 
 
+def delete_file(file_id, config=None, service=None):
+    """Driveから1ファイルを完全に削除する(ゴミ箱もスキップ)。Metricoolへの取り込みが
+    完了した後(投稿作成時のレスポンスでstatic.metricool.comのURLに変換されていることを
+    確認した後)に呼び出すことを想定している。"""
+    config = config or load_config()
+    service = service or get_drive_service(config)
+    service.files().delete(fileId=file_id).execute()
+
+
+def delete_files(file_ids, config=None):
+    """複数ファイルをまとめてDriveから削除する。"""
+    config = config or load_config()
+    service = get_drive_service(config)
+    for file_id in file_ids:
+        delete_file(file_id, config, service=service)
+
+
 if __name__ == "__main__":
     import sys
 
-    cfg = load_config()
-    urls = upload_files(sys.argv[1:], cfg)
-    for u in urls:
-        print(u)
+    if len(sys.argv) >= 2 and sys.argv[1] == "delete":
+        delete_files(sys.argv[2:])
+        print(f"{len(sys.argv) - 2}件のファイルをDriveから削除しました")
+    else:
+        cfg = load_config()
+        results = upload_files(sys.argv[1:], cfg)
+        for r in results:
+            print(f"{r['id']}\t{r['url']}")
