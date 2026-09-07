@@ -1,3 +1,8 @@
 # scripts/generate_all_slides.py の中間出力・作業用ディレクトリ（再生成可能なので追跡しない）
 scripts/output/
 scripts/materials
+
+# 秘密情報（Google サービスアカウント鍵など）。絶対にコミットしない
+secrets/
+*.json.key
+.env
