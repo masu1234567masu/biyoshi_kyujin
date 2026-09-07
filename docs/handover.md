@@ -370,7 +370,7 @@ piece201では、こうしたバックオフィス業務全般もサポートし
 #美容師求人 #フリーランス美容師 #面貸し美容師 #確定申告 #一人社長
 ```
 
-### 7本目：フリーランスの保険と年金の話（Metricoolで予約投稿済み・2026-09-09 10:00 JST公開予定）
+### 7本目：フリーランスの保険と年金の話（**投稿済み・2026-09-07 10:45 JSTにInstagramへの実際の公開を確認**）
 ```
 【フリーランスの保険と年金の話】
 
@@ -556,7 +556,9 @@ Claude.ai（元のチャット）のサンドボックス環境はネットワ�
   - `scripts/oauth_step1_get_auth_url.py` / `scripts/oauth_step2_exchange_code.py`：初回のみ必要なOAuth認証（認証URL発行→ブラウザで許可→コードをトークンに交換）
   - `config/drive_config.json`：プロジェクトID、フォルダID、Metricool Brand IDなど非機密設定（コミット対象）
   - `secrets/`：サービスアカウント鍵・OAuthクライアント情報・リフレッシュトークン等の機密情報（`.gitignore`でコミット対象外）
-- **2026-09-07、7本目（フリーランスの保険と年金の話）でこの一連のパイプラインを実際にテストし、Instagramへの予約投稿作成に成功**（2026-09-09 10:00 JST公開予定、Metricool投稿ID `371897508`）。Drive上の画像URLがMetricool側で自動的に`static.metricool.com`のURLに変換されて取り込まれることを確認した
+- **2026-09-07、7本目（フリーランスの保険と年金の話）でこの一連のパイプラインを実際にテストし、Instagramへの実際の公開まで確認できた**（Metricool投稿ID `371898464`、公開日時2026-09-07 10:45 JST。Drive上の画像URLがMetricool側で自動的に`static.metricool.com`のURLに変換されて取り込まれ、その後実際にInstagram「freelance_biyoshi_kyujin」に投稿されたことを増田氏が目視で確認済み）
+- 8本目（面貸し先の選び方）は2026-09-09 10:00 JST（このアカウントで最もエンゲージメントが高い水曜10時台）に公開予定として予約済み（Metricool投稿ID `371898570`）
+- Metricoolへの取り込みが確認できた画像は、Drive容量節約のため元ファイルを削除する運用にしている（`scripts/drive_upload.py delete`）。post7・post8で使った計16枚は削除済み
 
 ### Metricool API仕様メモ
 - `createScheduledPost`：`blogId`（=6852890）、`date`（ISO 8601）、`info`（JSON文字列）が必須
