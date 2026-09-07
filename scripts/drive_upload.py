@@ -1,8 +1,11 @@
 """
 Google Drive 自動アップロード用スクリプト。
-サービスアカウント認証で指定フォルダに画像をアップロードし、
-「リンクを知っている全員が閲覧可」に共有設定した上で、
+増田さん本人のOAuth認証(secrets/drive_oauth_token.jsonのリフレッシュトークン)で
+指定フォルダに画像をアップロードし、「リンクを知っている全員が閲覧可」に共有設定した上で、
 Metricool の media フィールドに渡せる公開URLを返す。
+
+サービスアカウントには個人Driveへの書き込み容量(ストレージクォータ)が無いため、
+本人のアカウント権限を借りるOAuth方式を採用している(oauth_step1/2で認証済み)。
 
 使い方:
   from drive_upload import upload_file, load_config
@@ -13,7 +16,8 @@ Metricool の media フィールドに渡せる公開URLを返す。
 import json
 import os
 
-from google.oauth2 import service_account
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
@@ -28,8 +32,19 @@ def load_config(config_path=None):
 
 
 def get_drive_service(config):
-    key_path = os.path.join(REPO_ROOT, config["service_account_key_path"])
-    creds = service_account.Credentials.from_service_account_file(key_path, scopes=SCOPES)
+    token_path = os.path.join(REPO_ROOT, "secrets", "drive_oauth_token.json")
+    with open(token_path, "r", encoding="utf-8") as f:
+        token = json.load(f)
+
+    creds = Credentials(
+        token=None,
+        refresh_token=token["refresh_token"],
+        client_id=token["client_id"],
+        client_secret=token["client_secret"],
+        token_uri=token["token_uri"],
+        scopes=token["scopes"],
+    )
+    creds.refresh(Request())
     return build("drive", "v3", credentials=creds)
 
 
