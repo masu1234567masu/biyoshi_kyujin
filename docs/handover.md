@@ -370,7 +370,7 @@ piece201では、こうしたバックオフィス業務全般もサポートし
 #美容師求人 #フリーランス美容師 #面貸し美容師 #確定申告 #一人社長
 ```
 
-### 7本目：フリーランスの保険と年金の話（画像・キャプション完成、投稿は未実施）
+### 7本目：フリーランスの保険と年金の話（Metricoolで予約投稿済み・2026-09-09 10:00 JST公開予定）
 ```
 【フリーランスの保険と年金の話】
 
@@ -543,28 +543,34 @@ InstagramをMetricool経由で自動投稿するには、Meta仕様上「Instagr
   5. その後Metricool側で改めて「Connect via Facebook」を選択したところ、正常に連携できた
 - **教訓**：モバイルアプリ経由のFacebookページ⇄Instagram連携は不安定・エラーが起きやすく、**PCブラウザから行うと成功しやすい**
 
-### 自動投稿がまだ完了していない理由（未解決の技術課題）
-- Metricoolの投稿作成API（`createScheduledPost`）は、画像を**公開URL**として受け取る必要がある
-- Claude.ai（このチャット）のサンドボックス環境で生成した画像は、外部から読み込めるURLになっていない
-- Claude.aiのサンドボックスはネットワーク接続が無効化されており、直接クラウドストレージへのアップロードもできない
-- ブラウザ拡張機能（Claude in Chrome）経由でGoogleドライブにアップロードする案も試したが、拡張機能とタブの連携権限エラー（Permission denied）が発生し、その場では解決できなかった
-- 結果として、**Claude CodeでGoogle Drive APIとMetricool APIを使った自動化システムをゼロから構築する方針**に切り替えた（このドキュメントの目的）
+### 自動投稿パイプライン（Claude Codeで構築・2026-09-07に動作確認済み）
+
+Claude.ai（元のチャット）のサンドボックス環境はネットワーク接続が無効化されており、画像を外部の公開URLにできないという制約があったため、Claude Code環境で以下の自動化パイプラインをゼロから構築した。
+
+**構成：画像生成 → Google Driveへ自動アップロード＋公開URL取得 → Metricool APIで予約投稿作成**
+
+- Metricoolへの投稿作成は、Claude Code環境に接続済みのMetricool MCPツール（`createScheduledPost`）を直接呼び出す方式のため、**Metricool APIキーの発行・管理は不要**だった（当初の想定より簡略化できた）
+- Google Drive自動アップロードには、当初サービスアカウント方式を想定していたが、**増田氏のGoogleアカウントが（Workspaceではなく）個人の無料Gmailアカウントだったため、サービスアカウントには保存容量(ストレージクォータ)が無く`storageQuotaExceeded`エラーで失敗した**。そのため、増田氏本人のアカウント権限を借りるOAuth 2.0方式（Desktopアプリクライアント、初回のみブラウザでの認証操作が必要、以降はリフレッシュトークンで自動更新）に切り替えて解決した
+- 実装ファイル：
+  - `scripts/drive_upload.py`：OAuth認証でDriveにアップロードし、「リンクを知っている全員が閲覧可」に設定した上で公開URLを返す
+  - `scripts/oauth_step1_get_auth_url.py` / `scripts/oauth_step2_exchange_code.py`：初回のみ必要なOAuth認証（認証URL発行→ブラウザで許可→コードをトークンに交換）
+  - `config/drive_config.json`：プロジェクトID、フォルダID、Metricool Brand IDなど非機密設定（コミット対象）
+  - `secrets/`：サービスアカウント鍵・OAuthクライアント情報・リフレッシュトークン等の機密情報（`.gitignore`でコミット対象外）
+- **2026-09-07、7本目（フリーランスの保険と年金の話）でこの一連のパイプラインを実際にテストし、Instagramへの予約投稿作成に成功**（2026-09-09 10:00 JST公開予定、Metricool投稿ID `371897508`）。Drive上の画像URLがMetricool側で自動的に`static.metricool.com`のURLに変換されて取り込まれることを確認した
 
 ### Metricool API仕様メモ
 - `createScheduledPost`：`blogId`（=6852890）、`date`（ISO 8601）、`info`（JSON文字列）が必須
-- `info`内の`media`：画像の公開URLの配列。Google Drive/DropboxのURLは自動アップロードに対応（要Google Drive連携設定）
+- `info`内の`media`：画像の公開URLの配列。Google Drive/DropboxのURLは自動アップロードに対応（Metricool側でGoogle Drive連携の設定が必要）
 - `info`内の`providers`：`[{"network":"instagram"}]`
 - `info`内の`instagramData`：`{"type":"POST"}`（カルーセル投稿でも type は POST）
 - `text`：キャプション本文（必須）
+- `getBestTimeToPostByNetwork`で、曜日・時間帯ごとのエンゲージメント予測値が取得できる（このアカウントでは水曜10時台が最高値）
 
-### 必要な認証・設定（未実施・Claude Codeで着手予定）
-1. Google Cloud プロジェクト作成、Google Drive API有効化
-2. サービスアカウント作成、認証キー（JSON）発行
-3. 増田氏のGoogle Driveの特定フォルダに、そのサービスアカウントへの編集権限を付与
-4. MetricoolのAPIキー発行（Metricool設定画面）
-5. 「画像アップロード→Drive公開リンク取得→Metricool投稿作成」を行うプログラムの構築
-6. キーの安全な保管方法（環境変数・シークレットマネージャー等）の検討
-7. どこでプログラムを常時稼働させるか（無料枠クラウドサービス等）の検討
+### 今後の運用フロー（確立済み）
+1. Claude.ai/Claude Codeで画像とキャプションを作成（`scripts/generate_all_slides.py`にpost関数を追加）
+2. `python3 scripts/drive_upload.py <画像ファイル...>` でDriveにアップロードし、公開URLを取得
+3. Metricool MCPの`createScheduledPost`で、それらのURLとキャプションを渡して予約投稿を作成
+4. 「自動で投稿して」と言われたタイミングで、上記2〜3をClaude Codeが実行する運用
 
 ---
 
