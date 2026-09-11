@@ -6,3 +6,4 @@ scripts/materials
 secrets/
 *.json.key
 .env
+__pycache__/
