@@ -657,6 +657,90 @@ def build_post5(materials_dir=SRC, out_dir=OUT):
     )
 
 
+# ==================== post10「独立という選択肢、美容師のキャリアロードマップ」 ====================
+# 7枚構成。他postと同じ関数群の組み合わせで作成。
+
+def build_post10(materials_dir=SRC, out_dir=OUT):
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+
+    beige_path = f"{materials_dir}/beige_texture.png"
+    logo_path = f"{materials_dir}/logo.jpeg"
+
+    # 背景生成
+    make_cover_bg(beige_path, f"{out_dir}/post10_bg_cover.jpg")
+    for i in range(2, 8):
+        make_logo_bg(logo_path, base_shade=224, seed=i + 600,
+                     out_path=f"{out_dir}/post10_bg_slide{i}.jpg")
+
+    # 1枚目: 表紙
+    draw_cover_slide(
+        f"{out_dir}/post10_bg_cover.jpg", f"{out_dir}/post10_final_slide1.jpg",
+        ["独立という選択肢", "美容師のキャリアロードマップ"],
+        subtitle="piece201 / Nakameguro, Tokyo"
+    )
+
+    # 2枚目: 導入
+    draw_title_body_slide(
+        f"{out_dir}/post10_bg_slide2.jpg", f"{out_dir}/post10_final_slide2.jpg",
+        title=None,
+        body_lines=[
+            "美容師のキャリアには、", "「独立」という選択肢があります。", "",
+            "でも独立とは、", "いきなり自分のお店を持つこと、", "だけではありません。", "",
+            "段階を踏んで進めていく方が、", "実はリスクが少なく現実的です。"
+        ],
+        body_color=DARK
+    )
+
+    # 3枚目: ①アシスタント・社員時代
+    draw_title_body_slide(
+        f"{out_dir}/post10_bg_slide3.jpg", f"{out_dir}/post10_final_slide3.jpg",
+        title="①アシスタント・社員時代",
+        body_lines=[
+            "技術・接客の基礎を積む時期。", "",
+            "指名客をつくる土台も、", "ここで育てます。"
+        ]
+    )
+
+    # 4枚目: ②フリーランス(面貸し)時代
+    draw_title_body_slide(
+        f"{out_dir}/post10_bg_slide4.jpg", f"{out_dir}/post10_final_slide4.jpg",
+        title="②フリーランス(面貸し)時代",
+        body_lines=[
+            "自分の顧客・売上を持ちながら、", "経営の感覚を身につけられる時期。", "",
+            "集客、価格設定、経費管理など、", "独立に必要な経験が実践で積めます。"
+        ]
+    )
+
+    # 5枚目: ③指名客・売上の基盤を固める時代
+    draw_title_body_slide(
+        f"{out_dir}/post10_bg_slide5.jpg", f"{out_dir}/post10_final_slide5.jpg",
+        title="③基盤を固める時代",
+        body_lines=[
+            "安定した指名客と、", "収入基盤ができてくる時期。", "",
+            "得意な技術・客層・立地イメージなど、", "開業に必要な軸が見えてきます。"
+        ]
+    )
+
+    # 6枚目: ④独立準備期
+    draw_title_body_slide(
+        f"{out_dir}/post10_bg_slide6.jpg", f"{out_dir}/post10_final_slide6.jpg",
+        title="④独立準備期",
+        body_lines=[
+            "資金計画、物件探し、", "スタッフ採用など、", "",
+            "具体的な開業準備を", "進める時期。"
+        ]
+    )
+
+    # 7枚目: まとめ+締め(1枚に統合)
+    draw_closing_slide(
+        f"{out_dir}/post10_bg_slide7.jpg", f"{out_dir}/post10_final_slide7.jpg",
+        lead_lines=["独立はゴールであると同時に、", "通過点でもあります。"],
+        body_lines=["フリーランス(面貸し)は、大きなリスクを負わずに", "独立に近づける、現実的な一歩です。"],
+        dm_line="自分のペースでキャリアを考えたい方は、DMで"
+    )
+
+
 if __name__ == "__main__":
     build_post7()
     print("post7 done")
@@ -666,3 +750,5 @@ if __name__ == "__main__":
     print("post9 done")
     build_post5()
     print("post5 done")
+    build_post10()
+    print("post10 done")
