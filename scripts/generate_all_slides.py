@@ -834,6 +834,90 @@ def build_post11(materials_dir=SRC, out_dir=OUT):
     )
 
 
+# ==================== post12「新規集客の具体的なやり方、4つのポイント」 ====================
+# 7枚構成。他postと同じ関数群の組み合わせで作成。
+
+def build_post12(materials_dir=SRC, out_dir=OUT):
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+
+    beige_path = f"{materials_dir}/beige_texture.png"
+    logo_path = f"{materials_dir}/logo.jpeg"
+
+    # 背景生成
+    make_cover_bg(beige_path, f"{out_dir}/post12_bg_cover.jpg")
+    for i in range(2, 8):
+        make_logo_bg(logo_path, base_shade=224, seed=i + 800,
+                     out_path=f"{out_dir}/post12_bg_slide{i}.jpg")
+
+    # 1枚目: 表紙
+    draw_cover_slide(
+        f"{out_dir}/post12_bg_cover.jpg", f"{out_dir}/post12_final_slide1.jpg",
+        ["新規集客の具体的なやり方", "4つのポイント"],
+        subtitle="piece201 / Nakameguro, Tokyo"
+    )
+
+    # 2枚目: 導入
+    draw_title_body_slide(
+        f"{out_dir}/post12_bg_slide2.jpg", f"{out_dir}/post12_final_slide2.jpg",
+        title=None,
+        body_lines=[
+            "フリーランス(面貸し)は", "集客も自己責任。", "",
+            "とはいえ、闇雲に頑張る", "必要はありません。", "",
+            "効果的な方法を知っておくだけで、", "ぐっと近道になります。"
+        ],
+        body_color=DARK
+    )
+
+    # 3枚目: ①SNS発信
+    draw_title_body_slide(
+        f"{out_dir}/post12_bg_slide3.jpg", f"{out_dir}/post12_final_slide3.jpg",
+        title="①SNS発信",
+        body_lines=[
+            "InstagramなどでBefore/After写真や", "施術のこだわりを発信。", "",
+            "「この人に切ってほしい」と", "思ってもらうきっかけになります。"
+        ]
+    )
+
+    # 4枚目: ②口コミ・紹介
+    draw_title_body_slide(
+        f"{out_dir}/post12_bg_slide4.jpg", f"{out_dir}/post12_final_slide4.jpg",
+        title="②口コミ・紹介",
+        body_lines=[
+            "既存のお客様からの紹介は、", "最も信頼度の高い集客経路。", "",
+            "紹介してくれたお客様への特典を", "用意しておくのも効果的です。"
+        ]
+    )
+
+    # 5枚目: ③Googleマップ・口コミサイト対策
+    draw_title_body_slide(
+        f"{out_dir}/post12_bg_slide5.jpg", f"{out_dir}/post12_final_slide5.jpg",
+        title="③Googleマップ対策",
+        body_lines=[
+            "「エリア名+美容室」で検索して", "来店する人も多いため、", "",
+            "Googleビジネスプロフィールの整備や", "口コミの蓄積も集客に直結します。"
+        ]
+    )
+
+    # 6枚目: ④集客媒体の活用
+    draw_title_body_slide(
+        f"{out_dir}/post12_bg_slide6.jpg", f"{out_dir}/post12_final_slide6.jpg",
+        title="④集客媒体の活用",
+        body_lines=[
+            "ホットペッパーなどの有料媒体は、", "新規客との接点を増やす手段の一つ。", "",
+            "ただし手数料がかかるため、", "自力集客とのバランスが大切です。"
+        ]
+    )
+
+    # 7枚目: まとめ+締め(1枚に統合)
+    draw_closing_slide(
+        f"{out_dir}/post12_bg_slide7.jpg", f"{out_dir}/post12_final_slide7.jpg",
+        lead_lines=["集客の方法は、", "一つではありません。"],
+        body_lines=["自分に合ったやり方を組み合わせていくことが、", "安定した指名につながります。"],
+        dm_line="気になる方はDMで"
+    )
+
+
 if __name__ == "__main__":
     build_post7()
     print("post7 done")
@@ -847,3 +931,5 @@ if __name__ == "__main__":
     print("post10 done")
     build_post11()
     print("post11 done")
+    build_post12()
+    print("post12 done")
