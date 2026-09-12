@@ -30,6 +30,7 @@ FONT_SERIF_MED   = "/usr/share/fonts/opentype/noto/NotoSerifCJK-Medium.ttc"
 FONT_SERIF_SEMI  = "/usr/share/fonts/opentype/noto/NotoSerifCJK-SemiBold.ttc"
 
 TW, TH = 1080, 1350  # Instagram 4:5
+MAX_TEXT_W = TW - 160  # 左右80pxずつの安全マージンを確保したテキスト最大幅
 
 DARK = (40, 37, 33)     # 見出し・本文の基本色
 GRAY = (135, 132, 126)  # 補足テキストの色
@@ -50,6 +51,21 @@ def draw_c(d, cx, y, text, font, fill):
 def lh(font, mult=1.3):
     """フォントサイズから1行分の高さを計算する（積み上げ配置の基準値）"""
     return int(font.size * mult)
+
+
+def fit_font(path, base_size, lines, max_width, min_size=28, step=2):
+    """
+    指定した行群(lines)がmax_widthに収まる最大のフォントサイズを返す。
+    文字数が多い行があっても画面端からはみ出さないようにするための安全弁。
+    """
+    size = base_size
+    texts = [t for t in lines if t]
+    while size > min_size:
+        f = F(path, size)
+        if not texts or max(f.getlength(t) for t in texts) <= max_width:
+            return f
+        size -= step
+    return F(path, min_size)
 
 
 def cover_crop(img, tw, th):
@@ -145,8 +161,8 @@ def draw_title_body_slide(bg_path, out_path, title, body_lines,
     d = ImageDraw.Draw(img)
     cx = TW // 2
 
-    f_title = title_font or F(FONT_SERIF_SEMI, 64)
-    f_body = body_font or F(FONT_SANS_MED, 46)
+    f_title = title_font or fit_font(FONT_SERIF_SEMI, 64, [title] if title else [], MAX_TEXT_W)
+    f_body = body_font or fit_font(FONT_SANS_MED, 46, body_lines, MAX_TEXT_W)
 
     title_h = lh(f_title)
     body_h = lh(f_body, 1.6)
@@ -170,7 +186,7 @@ def draw_cover_slide(bg_path, out_path, lines, subtitle=None):
     img = Image.open(bg_path).convert("RGB")
     d = ImageDraw.Draw(img)
     cx = TW // 2
-    f_t = F(FONT_SERIF_MED, 92)
+    f_t = fit_font(FONT_SERIF_MED, 92, lines, MAX_TEXT_W)
     t_h = lh(f_t, 1.4)
 
     total = t_h * len(lines)
@@ -196,7 +212,7 @@ def draw_comparison_row_slide(bg_path, out_path, title, rows, left_label, right_
     d = ImageDraw.Draw(img)
     cx = TW // 2
 
-    ft = F(FONT_SERIF_SEMI, 70)
+    ft = fit_font(FONT_SERIF_SEMI, 70, [title], MAX_TEXT_W)
     f_head = F(FONT_SERIF_MED, 58)
     f_label = F(FONT_SANS_MED, 36)
     f_val1 = F(FONT_SANS_MED, 44)
@@ -245,8 +261,8 @@ def draw_closing_slide(bg_path, out_path, lead_lines, body_lines, dm_line, foote
     d = ImageDraw.Draw(img)
     cx = TW // 2
 
-    f_lead = F(FONT_SERIF_MED, 56)
-    f_body = F(FONT_SANS_MED, 46)
+    f_lead = fit_font(FONT_SERIF_MED, 56, lead_lines, MAX_TEXT_W)
+    f_body = fit_font(FONT_SANS_MED, 46, body_lines + [dm_line], MAX_TEXT_W)
     f_foot = F(FONT_SANS_MED, 30)
 
     lead_h = lh(f_lead, 1.5)
@@ -741,6 +757,83 @@ def build_post10(materials_dir=SRC, out_dir=OUT):
     )
 
 
+# ==================== post11「美容師のお金のリアル、歩合シミュレーション(詳細版)」 ====================
+# 6枚構成。他postと同じ関数群の組み合わせで作成。
+
+def build_post11(materials_dir=SRC, out_dir=OUT):
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+
+    beige_path = f"{materials_dir}/beige_texture.png"
+    logo_path = f"{materials_dir}/logo.jpeg"
+
+    # 背景生成
+    make_cover_bg(beige_path, f"{out_dir}/post11_bg_cover.jpg")
+    for i in range(2, 7):
+        make_logo_bg(logo_path, base_shade=224, seed=i + 700,
+                     out_path=f"{out_dir}/post11_bg_slide{i}.jpg")
+
+    # 1枚目: 表紙
+    draw_cover_slide(
+        f"{out_dir}/post11_bg_cover.jpg", f"{out_dir}/post11_final_slide1.jpg",
+        ["美容師のお金のリアル", "歩合シミュレーション(詳細版)"],
+        subtitle="piece201 / Nakameguro, Tokyo"
+    )
+
+    # 2枚目: 導入
+    draw_title_body_slide(
+        f"{out_dir}/post11_bg_slide2.jpg", f"{out_dir}/post11_final_slide2.jpg",
+        title=None,
+        body_lines=[
+            "以前は、指名売上100万円の", "場合だけをご紹介しました。", "",
+            "今回はもう少し詳しく、", "複数の売上パターンで", "手取りを比較してみます。"
+        ],
+        body_color=DARK
+    )
+
+    # 3枚目: 指名売上別 手取り比較
+    draw_comparison_row_slide(
+        f"{out_dir}/post11_bg_slide3.jpg", f"{out_dir}/post11_final_slide3.jpg",
+        title="指名売上別 手取り比較",
+        rows=[
+            ("売上50万円", "27.5万円", None, "30万円", None),
+            ("売上80万円", "32万円", None, "48万円", None),
+            ("売上100万円", "35万円", None, "60万円", None),
+            ("売上150万円", "42.5万円", None, "90万円", None),
+        ],
+        left_label="雇用", right_label="フリーランス"
+    )
+
+    # 4枚目: 材料費というリアル
+    draw_title_body_slide(
+        f"{out_dir}/post11_bg_slide4.jpg", f"{out_dir}/post11_final_slide4.jpg",
+        title="材料費というリアル",
+        body_lines=[
+            "カラーやパーマなど薬剤を使う施術は、", "材料費が売上の6〜10%程度", "かかるのが一般的な目安です。", "",
+            "フリーランスは材料費も自己負担に", "なるケースが多いため、この分を", "差し引いて考える必要があります。"
+        ]
+    )
+
+    # 5枚目: 材料費を差し引いた「本当の手取り」
+    draw_title_body_slide(
+        f"{out_dir}/post11_bg_slide5.jpg", f"{out_dir}/post11_final_slide5.jpg",
+        title="材料費を差し引いた「本当の手取り」",
+        body_lines=[
+            "(材料費8%で試算)", "",
+            "売上50万円 → 約26万円", "売上80万円 → 約41.6万円",
+            "売上100万円 → 約52万円", "売上150万円 → 約78万円"
+        ]
+    )
+
+    # 6枚目: まとめ+締め(1枚に統合)
+    draw_closing_slide(
+        f"{out_dir}/post11_bg_slide6.jpg", f"{out_dir}/post11_final_slide6.jpg",
+        lead_lines=["売上が上がるほど、", "フリーランスの伸びしろは大きくなります。"],
+        body_lines=["ただし歩合率や材料費の負担割合は", "サロンによって異なるので、契約前の確認が大切です。"],
+        dm_line="気になる方はDMで"
+    )
+
+
 if __name__ == "__main__":
     build_post7()
     print("post7 done")
@@ -752,3 +845,5 @@ if __name__ == "__main__":
     print("post5 done")
     build_post10()
     print("post10 done")
+    build_post11()
+    print("post11 done")
