@@ -145,19 +145,19 @@ def draw_title_body_slide(bg_path, out_path, title, body_lines,
     d = ImageDraw.Draw(img)
     cx = TW // 2
 
-    f_title = title_font or F(FONT_SERIF_SEMI, 46)
-    f_body = body_font or F(FONT_SANS_MED, 34)
+    f_title = title_font or F(FONT_SERIF_SEMI, 64)
+    f_body = body_font or F(FONT_SANS_MED, 46)
 
     title_h = lh(f_title)
-    body_h = lh(f_body, 1.45)
+    body_h = lh(f_body, 1.6)
 
-    total = title_h + 70 + body_h * len(body_lines)
+    total = title_h + 85 + body_h * len(body_lines)
     start_y = int((TH - total) / 2)
 
     y = start_y
     if title:
         draw_c(d, cx, y, title, f_title, title_color)
-        y += title_h + 70
+        y += title_h + 85
     for line in body_lines:
         draw_c(d, cx, y, line, f_body, body_color)
         y += body_h
@@ -170,8 +170,8 @@ def draw_cover_slide(bg_path, out_path, lines, subtitle=None):
     img = Image.open(bg_path).convert("RGB")
     d = ImageDraw.Draw(img)
     cx = TW // 2
-    f_t = F(FONT_SERIF_MED, 58)
-    t_h = lh(f_t, 1.35)
+    f_t = F(FONT_SERIF_MED, 92)
+    t_h = lh(f_t, 1.4)
 
     total = t_h * len(lines)
     start_y = int((1230 - total) / 2) + 60
@@ -181,7 +181,7 @@ def draw_cover_slide(bg_path, out_path, lines, subtitle=None):
         y += t_h
 
     if subtitle:
-        draw_c(d, cx, TH - 95, subtitle, F(FONT_SANS_REG, 26), GRAY)
+        draw_c(d, cx, TH - 95, subtitle, F(FONT_SANS_REG, 28), GRAY)
 
     img.save(out_path, quality=93)
 
@@ -196,16 +196,16 @@ def draw_comparison_row_slide(bg_path, out_path, title, rows, left_label, right_
     d = ImageDraw.Draw(img)
     cx = TW // 2
 
-    ft = F(FONT_SERIF_SEMI, 56)
-    f_head = F(FONT_SERIF_MED, 46)
-    f_label = F(FONT_SANS_MED, 30)
-    f_val1 = F(FONT_SANS_MED, 34)
-    f_val_small = F(FONT_SANS_REG, 26)
-    f_val_big = F(FONT_SANS_MED, 46)
+    ft = F(FONT_SERIF_SEMI, 70)
+    f_head = F(FONT_SERIF_MED, 58)
+    f_label = F(FONT_SANS_MED, 36)
+    f_val1 = F(FONT_SANS_MED, 44)
+    f_val_small = F(FONT_SANS_REG, 30)
+    f_val_big = F(FONT_SANS_MED, 58)
 
     title_h = lh(ft)
     head_h = lh(f_head)
-    row_h = 168
+    row_h = 180
     total = title_h + 55 + head_h + 45 + row_h * len(rows)
     start_y = int((TH - total) / 2)
 
@@ -245,25 +245,25 @@ def draw_closing_slide(bg_path, out_path, lead_lines, body_lines, dm_line, foote
     d = ImageDraw.Draw(img)
     cx = TW // 2
 
-    f_lead = F(FONT_SERIF_MED, 40)
-    f_body = F(FONT_SANS_MED, 34)
-    f_foot = F(FONT_SANS_MED, 28)
+    f_lead = F(FONT_SERIF_MED, 56)
+    f_body = F(FONT_SANS_MED, 46)
+    f_foot = F(FONT_SANS_MED, 30)
 
-    lead_h = lh(f_lead, 1.4)
-    body_h = lh(f_body, 1.4)
+    lead_h = lh(f_lead, 1.5)
+    body_h = lh(f_body, 1.5)
     dm_h = lh(f_body, 1.3)
 
-    total = lead_h * len(lead_lines) + 65 + body_h * len(body_lines) + 70 + dm_h
+    total = lead_h * len(lead_lines) + 75 + body_h * len(body_lines) + 80 + dm_h
     start_y = int((TH - total) / 2) - 20
     y = start_y
     for line in lead_lines:
         draw_c(d, cx, y, line, f_lead, DARK)
         y += lead_h
-    y += 65
+    y += 75
     for line in body_lines:
         draw_c(d, cx, y, line, f_body, GRAY)
         y += body_h
-    y += 70
+    y += 80
     draw_c(d, cx, y, dm_line, f_body, MG)
 
     draw_c(d, cx, TH - 95, footer, f_foot, GRAY)
