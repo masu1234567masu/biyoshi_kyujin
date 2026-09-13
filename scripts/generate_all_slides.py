@@ -918,6 +918,89 @@ def build_post12(materials_dir=SRC, out_dir=OUT):
     )
 
 
+# ==================== post13「常連客を作るための工夫、4つのポイント」 ====================
+# 7枚構成。他postと同じ関数群の組み合わせで作成。
+
+def build_post13(materials_dir=SRC, out_dir=OUT):
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+
+    beige_path = f"{materials_dir}/beige_texture.png"
+    logo_path = f"{materials_dir}/logo.jpeg"
+
+    # 背景生成
+    make_cover_bg(beige_path, f"{out_dir}/post13_bg_cover.jpg")
+    for i in range(2, 8):
+        make_logo_bg(logo_path, base_shade=224, seed=i + 900,
+                     out_path=f"{out_dir}/post13_bg_slide{i}.jpg")
+
+    # 1枚目: 表紙
+    draw_cover_slide(
+        f"{out_dir}/post13_bg_cover.jpg", f"{out_dir}/post13_final_slide1.jpg",
+        ["常連客を作るための工夫", "4つのポイント"],
+        subtitle="piece201 / Nakameguro, Tokyo"
+    )
+
+    # 2枚目: 導入
+    draw_title_body_slide(
+        f"{out_dir}/post13_bg_slide2.jpg", f"{out_dir}/post13_final_slide2.jpg",
+        title=None,
+        body_lines=[
+            "新規集客も大切ですが、", "長く通ってもらえる関係を", "作ることも同じくらい大切。", "",
+            "安定した売上・指名に", "つながる工夫をまとめました。"
+        ],
+        body_color=DARK
+    )
+
+    # 3枚目: ①次回予約の声かけ
+    draw_title_body_slide(
+        f"{out_dir}/post13_bg_slide3.jpg", f"{out_dir}/post13_final_slide3.jpg",
+        title="①次回予約の声かけ",
+        body_lines=[
+            "会計時に「次はこのくらいの", "時期がおすすめです」と", "一言添えるだけで、",
+            "次回来店率がぐっと上がります。"
+        ]
+    )
+
+    # 4枚目: ②LINE公式アカウントでの再来促進
+    draw_title_body_slide(
+        f"{out_dir}/post13_bg_slide4.jpg", f"{out_dir}/post13_final_slide4.jpg",
+        title="②LINEでの再来促進",
+        body_lines=[
+            "来店後のお礼メッセージや、", "来店周期に合わせた", "リマインド配信で、",
+            "思い出してもらうきっかけを", "作れます。"
+        ]
+    )
+
+    # 5枚目: ③来店周期に合わせたフォロー
+    draw_title_body_slide(
+        f"{out_dir}/post13_bg_slide5.jpg", f"{out_dir}/post13_final_slide5.jpg",
+        title="③来店周期に合わせたフォロー",
+        body_lines=[
+            "カラーやパーマの持ち具合に", "合わせて、最適なタイミングで",
+            "声をかけることが、", "信頼につながります。"
+        ]
+    )
+
+    # 6枚目: ④特別感のある対応
+    draw_title_body_slide(
+        f"{out_dir}/post13_bg_slide6.jpg", f"{out_dir}/post13_final_slide6.jpg",
+        title="④特別感のある対応",
+        body_lines=[
+            "誕生日メッセージや、", "常連限定のちょっとした特典。", "",
+            "「気にかけてもらえている」と", "感じてもらう工夫も効果的です。"
+        ]
+    )
+
+    # 7枚目: まとめ+締め(1枚に統合)
+    draw_closing_slide(
+        f"{out_dir}/post13_bg_slide7.jpg", f"{out_dir}/post13_final_slide7.jpg",
+        lead_lines=["新規集客と両輪で、", "リピーターを育てていくことが、"],
+        body_lines=["フリーランスとして安定して", "働き続けるカギになります。"],
+        dm_line="気になる方はDMで"
+    )
+
+
 if __name__ == "__main__":
     build_post7()
     print("post7 done")
@@ -933,3 +1016,5 @@ if __name__ == "__main__":
     print("post11 done")
     build_post12()
     print("post12 done")
+    build_post13()
+    print("post13 done")
