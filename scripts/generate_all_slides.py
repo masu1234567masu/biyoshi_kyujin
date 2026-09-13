@@ -1001,6 +1001,90 @@ def build_post13(materials_dir=SRC, out_dir=OUT):
     )
 
 
+# ==================== post14「独立後の『こんなはずじゃなかった』あるあるギャップ集」 ====================
+# 7枚構成。他postと同じ関数群の組み合わせで作成。
+
+def build_post14(materials_dir=SRC, out_dir=OUT):
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+
+    beige_path = f"{materials_dir}/beige_texture.png"
+    logo_path = f"{materials_dir}/logo.jpeg"
+
+    # 背景生成
+    make_cover_bg(beige_path, f"{out_dir}/post14_bg_cover.jpg")
+    for i in range(2, 8):
+        make_logo_bg(logo_path, base_shade=224, seed=i + 1000,
+                     out_path=f"{out_dir}/post14_bg_slide{i}.jpg")
+
+    # 1枚目: 表紙
+    draw_cover_slide(
+        f"{out_dir}/post14_bg_cover.jpg", f"{out_dir}/post14_final_slide1.jpg",
+        ["独立後の「こんなはずじゃなかった」", "あるあるギャップ集"],
+        subtitle="piece201 / Nakameguro, Tokyo"
+    )
+
+    # 2枚目: 導入
+    draw_title_body_slide(
+        f"{out_dir}/post14_bg_slide2.jpg", f"{out_dir}/post14_final_slide2.jpg",
+        title=None,
+        body_lines=[
+            "独立はゴールであると同時に、", "新しいスタート地点。", "",
+            "理想と現実のギャップを", "事前に知っておくことで、",
+            "後悔のない準備ができます。"
+        ],
+        body_color=DARK
+    )
+
+    # 3枚目: ①「売上=手取り」だと思っていた
+    draw_title_body_slide(
+        f"{out_dir}/post14_bg_slide3.jpg", f"{out_dir}/post14_final_slide3.jpg",
+        title="①「売上=手取り」だと思っていた",
+        body_lines=[
+            "家賃・材料費・水道光熱費・税金…", "経費を差し引くと、思ったより",
+            "手元に残らないことに", "直面する人も。"
+        ]
+    )
+
+    # 4枚目: ②接客以外の業務が想像以上に多かった
+    draw_title_body_slide(
+        f"{out_dir}/post14_bg_slide4.jpg", f"{out_dir}/post14_final_slide4.jpg",
+        title="②接客以外の業務が想像以上に多かった",
+        body_lines=[
+            "経理、予約管理、在庫管理、", "清掃、SNS運用。", "",
+            "今まで分業されていた仕事が、", "全部自分の仕事になります。"
+        ]
+    )
+
+    # 5枚目: ③一人の時間が長くて孤独
+    draw_title_body_slide(
+        f"{out_dir}/post14_bg_slide5.jpg", f"{out_dir}/post14_final_slide5.jpg",
+        title="③一人の時間が長くて孤独",
+        body_lines=[
+            "相談できる同僚も上司もいない", "環境で、モチベーションを",
+            "保つのが難しいと感じる人も", "少なくありません。"
+        ]
+    )
+
+    # 6枚目: ④新規集客が思ったより大変だった
+    draw_title_body_slide(
+        f"{out_dir}/post14_bg_slide6.jpg", f"{out_dir}/post14_final_slide6.jpg",
+        title="④新規集客が思ったより大変だった",
+        body_lines=[
+            "雇われ時代は「サロンの看板」で", "来てくれていたお客様も、",
+            "独立すると同じようには", "来てくれません。"
+        ]
+    )
+
+    # 7枚目: まとめ+締め(1枚に統合)
+    draw_closing_slide(
+        f"{out_dir}/post14_bg_slide7.jpg", f"{out_dir}/post14_final_slide7.jpg",
+        lead_lines=["こうしたギャップは、", "事前に知っておくだけで備えられます。"],
+        body_lines=["面貸しやフリーランスとして経験を積んでから独立するのも、", "リスクを減らす現実的な一歩です。"],
+        dm_line="気になる方はDMで"
+    )
+
+
 if __name__ == "__main__":
     build_post7()
     print("post7 done")
@@ -1018,3 +1102,5 @@ if __name__ == "__main__":
     print("post12 done")
     build_post13()
     print("post13 done")
+    build_post14()
+    print("post14 done")
