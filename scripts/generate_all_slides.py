@@ -1085,6 +1085,104 @@ def build_post14(materials_dir=SRC, out_dir=OUT):
     )
 
 
+# ==================== post15「確定申告・会計のリアルQ&A」 ====================
+# 8枚構成。他postと同じ関数群の組み合わせで作成。
+
+def build_post15(materials_dir=SRC, out_dir=OUT):
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+
+    beige_path = f"{materials_dir}/beige_texture.png"
+    logo_path = f"{materials_dir}/logo.jpeg"
+
+    # 背景生成
+    make_cover_bg(beige_path, f"{out_dir}/post15_bg_cover.jpg")
+    for i in range(2, 9):
+        make_logo_bg(logo_path, base_shade=224, seed=i + 1100,
+                     out_path=f"{out_dir}/post15_bg_slide{i}.jpg")
+
+    # 1枚目: 表紙
+    draw_cover_slide(
+        f"{out_dir}/post15_bg_cover.jpg", f"{out_dir}/post15_final_slide1.jpg",
+        ["確定申告・会計の", "リアルQ&A"],
+        subtitle="piece201 / Nakameguro, Tokyo"
+    )
+
+    # 2枚目: 導入
+    draw_title_body_slide(
+        f"{out_dir}/post15_bg_slide2.jpg", f"{out_dir}/post15_final_slide2.jpg",
+        title=None,
+        body_lines=[
+            "美容師は技術には強くても、", "事務作業や数字の管理は苦手…", "という人、実はかなり多いです。", "",
+            "職人気質で手を動かす仕事だからこそ、", "それは自然なこと。",
+            "完璧を目指す必要はありません。"
+        ],
+        body_color=DARK
+    )
+
+    # 3枚目: Q1
+    draw_title_body_slide(
+        f"{out_dir}/post15_bg_slide3.jpg", f"{out_dir}/post15_final_slide3.jpg",
+        title="Q1. 会計が苦手でも大丈夫？",
+        body_lines=[
+            "レシートを箱にためておくだけでも", "大丈夫。",
+            "まとめて後で処理する形でも", "十分に回ります。"
+        ]
+    )
+
+    # 4枚目: Q2
+    draw_title_body_slide(
+        f"{out_dir}/post15_bg_slide4.jpg", f"{out_dir}/post15_final_slide4.jpg",
+        title="Q2. 難しい仕組みを覚えなきゃダメ？",
+        body_lines=[
+            "今の会計ソフトは、レシートを", "スマホで撮るだけで自動で",
+            "記帳してくれるものも多く、", "簿記の知識がなくても使えます。"
+        ]
+    )
+
+    # 5枚目: Q3
+    draw_title_body_slide(
+        f"{out_dir}/post15_bg_slide5.jpg", f"{out_dir}/post15_final_slide5.jpg",
+        title="Q3. 青色申告と白色申告、どっちがいい？",
+        body_lines=[
+            "複雑なのが苦手なら、まず", "手続きが簡単な白色申告から始めて、",
+            "慣れてきたら青色申告に", "切り替えるのも一つの方法です。"
+        ]
+    )
+
+    # 6枚目: Q4
+    draw_title_body_slide(
+        f"{out_dir}/post15_bg_slide6.jpg", f"{out_dir}/post15_final_slide6.jpg",
+        title="Q4. 自分でやるのが不安なら？",
+        body_lines=[
+            "税理士に丸投げする、", "最初だけスポットで相談するのも手。", "",
+            "数字が苦手なことは、", "全く恥ずかしいことではありません。"
+        ]
+    )
+
+    # 7枚目: Q5
+    draw_title_body_slide(
+        f"{out_dir}/post15_bg_slide7.jpg", f"{out_dir}/post15_final_slide7.jpg",
+        title="Q5. 申告を怠るとどうなる？",
+        body_lines=[
+            "期限内に申告しないと、", "無申告加算税や延滞税が",
+            "課される可能性があります。", "",
+            "青色申告の場合、期限を過ぎると", "最大65万円の控除が",
+            "10万円まで減ってしまうことも。", "",
+            "確定申告書は、今後のローン審査や", "賃貸契約で収入証明として",
+            "必要になる場面もあります。"
+        ]
+    )
+
+    # 8枚目: まとめ+締め(1枚に統合)
+    draw_closing_slide(
+        f"{out_dir}/post15_bg_slide8.jpg", f"{out_dir}/post15_final_slide8.jpg",
+        lead_lines=["苦手なことは、無理に", "自分だけで抱え込まなくて大丈夫。"],
+        body_lines=["仕組みとやり方さえ知っておけば、", "十分乗り越えられます。"],
+        dm_line="気になる方はDMで"
+    )
+
+
 if __name__ == "__main__":
     build_post7()
     print("post7 done")
@@ -1104,3 +1202,5 @@ if __name__ == "__main__":
     print("post13 done")
     build_post14()
     print("post14 done")
+    build_post15()
+    print("post15 done")
