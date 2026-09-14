@@ -1183,6 +1183,90 @@ def build_post15(materials_dir=SRC, out_dir=OUT):
     )
 
 
+# ==================== post16「ライフステージ別 働き方の選び方ガイド」 ====================
+# 7枚構成。他postと同じ関数群の組み合わせで作成。
+
+def build_post16(materials_dir=SRC, out_dir=OUT):
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+
+    beige_path = f"{materials_dir}/beige_texture.png"
+    logo_path = f"{materials_dir}/logo.jpeg"
+
+    # 背景生成
+    make_cover_bg(beige_path, f"{out_dir}/post16_bg_cover.jpg")
+    for i in range(2, 8):
+        make_logo_bg(logo_path, base_shade=224, seed=i + 1200,
+                     out_path=f"{out_dir}/post16_bg_slide{i}.jpg")
+
+    # 1枚目: 表紙
+    draw_cover_slide(
+        f"{out_dir}/post16_bg_cover.jpg", f"{out_dir}/post16_final_slide1.jpg",
+        ["ライフステージ別", "働き方の選び方ガイド"],
+        subtitle="piece201 / Nakameguro, Tokyo"
+    )
+
+    # 2枚目: 導入
+    draw_title_body_slide(
+        f"{out_dir}/post16_bg_slide2.jpg", f"{out_dir}/post16_final_slide2.jpg",
+        title=None,
+        body_lines=[
+            "美容師の働き方は、", "雇用か独立かの二択だけ", "ではありません。", "",
+            "自分のライフステージや目的に", "合わせて働き方を選べるのが、",
+            "フリーランス(面貸し)の魅力です。"
+        ],
+        body_color=DARK
+    )
+
+    # 3枚目: ①子育て中の方に
+    draw_title_body_slide(
+        f"{out_dir}/post16_bg_slide3.jpg", f"{out_dir}/post16_final_slide3.jpg",
+        title="①子育て中の方に",
+        body_lines=[
+            "保育園の預かり時間に合わせて、", "稼働日・時間を自由に設定可能。", "",
+            "急な体調不良にも、", "自分の裁量で対応しやすくなります。"
+        ]
+    )
+
+    # 4枚目: ②副業として美容師をしたい方に
+    draw_title_body_slide(
+        f"{out_dir}/post16_bg_slide4.jpg", f"{out_dir}/post16_final_slide4.jpg",
+        title="②副業として美容師をしたい方に",
+        body_lines=[
+            "本業と並行して、週末や", "空いた時間だけ稼働することも", "できます。",
+            "", "まずは小さく始めて感触を", "つかみたい人に向いています。"
+        ]
+    )
+
+    # 5枚目: ③独立を見据えている方に
+    draw_title_body_slide(
+        f"{out_dir}/post16_bg_slide5.jpg", f"{out_dir}/post16_final_slide5.jpg",
+        title="③独立を見据えている方に",
+        body_lines=[
+            "面貸しで自分の顧客・売上を", "持ちながら、集客や経費管理など",
+            "独立に必要な経験を", "実践で積めます。"
+        ]
+    )
+
+    # 6枚目: ④がっつり稼ぎたい・キャリアアップしたい方に
+    draw_title_body_slide(
+        f"{out_dir}/post16_bg_slide6.jpg", f"{out_dir}/post16_final_slide6.jpg",
+        title="④がっつり稼ぎたい方に",
+        body_lines=[
+            "稼働日数を増やして、", "短期間で売上と指名を", "伸ばすことも可能。", "",
+            "頑張った分だけ、", "収入に還元されます。"
+        ]
+    )
+
+    # 7枚目: まとめ+締め(1枚に統合)
+    draw_closing_slide(
+        f"{out_dir}/post16_bg_slide7.jpg", f"{out_dir}/post16_final_slide7.jpg",
+        lead_lines=["正解は、一つではありません。"],
+        body_lines=["自分が今どのステージにいるかを考えることが、", "働き方を選ぶ第一歩です。"],
+        dm_line="気になる方はDMで"
+    )
+
+
 if __name__ == "__main__":
     build_post7()
     print("post7 done")
@@ -1204,3 +1288,5 @@ if __name__ == "__main__":
     print("post14 done")
     build_post15()
     print("post15 done")
+    build_post16()
+    print("post16 done")
