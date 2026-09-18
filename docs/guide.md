@@ -201,10 +201,24 @@ print('post17 done')
 `assets/posts/postN/caption.txt`にキャプション全文を保存する。
 
 ### ステップ4：投稿頻度・タイミングの決定
-- 1日1本ペースを守る（複数本まとめてネタができても小出しにする）
-- Metricoolの`getScheduledPosts`で既存の予約状況を確認し、次に空いている日を選ぶ
-- `getBestTimeToPostByNetwork`でその曜日のベストタイム（エンゲージメント予測値が
-  最大の時間帯）を取得し、その時刻に設定する（曜日固定ではない）
+**（2026-09-18改訂）** 以前は「1日1本ペース」だったが、5日連続で毎日ほぼ同時刻に
+API自動投稿を続けたところ、13〜15本目がInstagram側の自動制限エラー
+（`"We restrict certain activity to protect our community"`）で公開失敗する
+事態が発生した。ボット的な投稿パターンと判定された可能性が高いため、以下の
+方針に変更している：
+- **投稿間隔は最低3日空ける**。Metricoolの`getScheduledPosts`で既存の予約状況を
+  確認し、直近の予約日から3日以上先の空いている日を選ぶ
+- **投稿時刻は毎回変える**。`getBestTimeToPostByNetwork`でその曜日のベストタイムを
+  参考にはするが、複数日で同じ時間帯（例：ほぼ毎日10時台）が最高値として返っても
+  機械的にそれを採用せず、その日の中で高めの別の時間帯（12時台・15時台・18時台など）に
+  あえて散らす
+- **アカウントの投稿が安定して成功するのが確認できるまで、`info.autoPublish`は
+  `false`にする**。これによりMetricoolアプリに通知が届き、増田氏本人が手動で
+  ワンタップ公開する形になる（API経由の無人自動公開を避けることで、ボット的な
+  挙動と判定されるリスクを下げる狙い）。数本連続でエラーなく公開できることが
+  確認できたら`true`に戻すことを検討する
+- キャプションの構成（導入→①②③④→まとめ→DM誘導→同じ5ハッシュタグ）も毎回
+  判で押したようにならないよう、たまに構成やハッシュタグの組み合わせを変える
 - **予約時刻は必ず「今から20分以上先」に設定する**。Driveアップロード等の準備に
   数分かかるため、余裕が短いと`createScheduledPost`実行時に指定時刻が過去になり
   「Publication date cannot be in the past」エラーで失敗し、やり直しで許可プロンプトが
@@ -228,7 +242,15 @@ Metricool MCPツール`createScheduledPost`を呼び出す。主なパラメー�
 - `info.media`：ステップ5で得たDriveの公開URL配列（順番＝スライド順）
 - `info.providers`：`[{"network": "instagram"}]`
 - `info.instagramData`：`{"type": "POST", "showReelOnFeed": true}`
-- `info.autoPublish`：`true`（指定時刻に自動公開）
+- `info.autoPublish`：指定時刻に自動公開するなら`true`、Metricoolアプリへの
+  プッシュ通知にして本人の手動タップ公開にするなら`false`。**2026-09-18以降、
+  アカウントの投稿が安定するまでは`false`を使う**（ステップ4参照）
+
+既存の予約を修正する場合は`createScheduledPost`ではなく`updateScheduledPost`を使う。
+`id`と`uuid`が必要（`getScheduledPosts`から取得）。更新のたびに`id`は変わるが
+`uuid`は変わらないので、再度更新するときは`getScheduledPosts`で最新の`id`を
+取り直すこと。`text`/`media`/`providers`等、変更しないフィールドも含めて
+フルセットで渡す必要がある（差分更新ではなく丸ごと上書き）。
 
 **ここでは絶対に「投稿して」等の明確な指示がない限り予約・公開操作を
 行わないこと**（壁打ち→OK→画像化→OKまでは進めてよいが、投稿の実行は別途承認が必要）。
@@ -281,6 +303,7 @@ OAUTHLIB_INSECURE_TRANSPORT=1 python3 scripts/drive_upload.py delete <ファイ�
 | 画像の文字が画面端からはみ出す | フォントサイズが大きすぎる／`fit_font()`を通していないテキスト描画を追加した | 新しいテキスト描画は既存の`draw_*_slide()`関数を再利用する（`fit_font()`が自動で効く） |
 | 画像内の絵文字が「✕」になる | Noto CJKフォントに絵文字グリフが無い | 画像内では絵文字を使わない。キャプション本文でのみ使う |
 | Instagram連携で「profile is not a Business/Creator」エラー | モバイルアプリ経由の連携が不安定 | PCブラウザから連携操作をやり直す |
+| 予約投稿が`status: "ERROR"`、`"We restrict certain activity to protect our community"` | 毎日ほぼ同時刻・同じ体裁でAPI自動投稿を続けたことがInstagram側の自動制限（ボット的パターン検知）に引っかかった可能性が高い（2026-09-17、13〜15本目で発生） | 投稿間隔を3日以上空け、時刻も毎回ずらし、`autoPublish: false`に切り替えて手動タップ公開にする（ステップ4参照）。既存の予約は`updateScheduledPost`で日時・`autoPublish`を書き換えて再スケジュールする |
 
 ---
 

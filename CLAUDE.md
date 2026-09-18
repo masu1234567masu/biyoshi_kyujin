@@ -26,15 +26,25 @@ work if this is your first turn in this repo — it has the exact commands.
    cause `createScheduledPost` to fail with "Publication date cannot be in the
    past" after Drive-upload delays eat the buffer — the retry then triggers a
    second write-permission prompt for the user.
-4. **Cap at 1 Instagram post per day.** Check `getScheduledPosts` for the next
-   open day before picking a `getBestTimeToPostByNetwork` slot, even if
-   multiple posts are ready.
-5. **Fact-check concrete numbers before writing them into a caption** (tax
+4. **Space posts at least 3 days apart, and vary the exact time and hashtag
+   set each time — never post daily.** (Revised 2026-09-18: the original
+   "1/day" cadence caused 13–15本目 to fail with Instagram's automated
+   `"We restrict certain activity to protect our community"` error after 5
+   straight days of identical-time, identical-format API posts — a classic
+   bot-pattern flag. Check `getScheduledPosts` for the next open slot ≥3 days
+   out, and deliberately avoid picking the same hour every time even when
+   `getBestTimeToPostByNetwork` ranks it highest for multiple days in a row.)
+5. **Until the account's posting is confirmed stable again, schedule new
+   posts with `autoPublish: false`** so they land as a push notification for
+   the user to tap-publish by hand in the Metricool app, rather than
+   `createScheduledPost`/`updateScheduledPost` publishing unattended via the
+   API. Revisit this once a few manually-tapped posts succeed without errors.
+6. **Fact-check concrete numbers before writing them into a caption** (tax
    figures, percentages, deadlines, etc.) — use WebSearch, don't rely on
    memory or the client's recollection.
-6. **Never commit `secrets/`** (OAuth client secret, refresh token). It's
+7. **Never commit `secrets/`** (OAuth client secret, refresh token). It's
    gitignored; don't work around that.
-7. **After every meaningful change, update `docs/handover.md`** (captions,
+8. **After every meaningful change, update `docs/handover.md`** (captions,
    roadmap status, pipeline history with Metricool post IDs) and commit/push
    to `claude/automation-planning-verification-lcupt0`.
 
