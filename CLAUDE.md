@@ -98,11 +98,42 @@ footer)` + `build_story_catchup(number, kicker, title, bullets, ...)` in
 `scripts/generate_all_slides.py` (a generalization of
 `draw_story_recruit_full()` — kicker number like "①" + title + 3–5 condensed
 bullet lines + DM CTA). Follow the normal draft→approve flow (rule #1) for
-each day's condensed content before generating its image. ①(1本目) is done:
-generated and scheduled for 2026-09-24 18:00 JST, Metricool ID `380671709`
-(scheduled a day out and at a different hour than that day's already-queued
-17本目 feed post at 10:00, per the user's own timing call — not a fixed rule,
-just what happened this time).
+each day's condensed content before generating its image.
+
+**Update 2026-09-23: entire series 1–17 is now generated and scheduled**
+(user asked to prep all remaining images and bulk-schedule them at once
+instead of one-per-day — approved the condensed-content table for 2–17 in
+one shot, generated all 16 images, uploaded to Drive, and issued 16
+`createScheduledPost` calls in parallel). All Drive temp files for this
+batch have been deleted post-ingestion; local `*_bg.jpg` intermediates
+removed. Full schedule (all daily at 18:00 JST, `autoPublish: true`):
+
+| # | date (JST) | Metricool ID |
+|---|------------|--------------|
+| 1 | 2026-09-24 | `380671709` |
+| 2 | 2026-09-25 | `380674551` |
+| 3 | 2026-09-26 | `380674727` |
+| 4 | 2026-09-27 | `380674800` |
+| 5 | 2026-09-28 | `380674829` |
+| 6 | 2026-09-29 | `380674861` |
+| 7 | 2026-09-30 | `380674894` |
+| 8 | 2026-10-01 | `380674949` |
+| 9 | 2026-10-02 | `380675098` |
+| 10 | 2026-10-03 | `380675189` |
+| 11 | 2026-10-04 | `380675292` |
+| 12 | 2026-10-05 | `380675420` |
+| 13 | 2026-10-06 | `380675503` |
+| 14 | 2026-10-07 | `380675537` |
+| 15 | 2026-10-08 | `380675569` |
+| 16 | 2026-10-09 | `380675599` |
+| 17 | 2026-10-10 | `380675644` |
+
+Nothing left to build for this initiative — just let it post out day by day.
+Once 17 has posted (2026-10-10), remind the user it's their turn to
+manually create the Instagram Highlight, and confirm with them then whether
+it's one Highlight or split by theme (still open). Do not resume the
+paused feed-carousel cadence (rule #6 above) until the user explicitly says
+so.
 7. **Every feed carousel post also gets an Instagram Story cross-post**,
    added 2026-09-23 per user request (previously undisclosed that Metricool
    even supports Stories — don't make that omission again). Reuse the
