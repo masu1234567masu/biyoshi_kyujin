@@ -86,27 +86,23 @@ Instagram Highlight from the full set** (Highlight creation itself is a
 manual Instagram-app step, not automatable — same limitation as the
 recruitment Highlight story).
 
-Open questions to resolve with the user before/at execution time (don't
-guess silently):
-- Scope: posts 1–4 and 6 predate the `build_postN()` pipeline and have no
-  generation code — their full captions live in `docs/handover.md` section 7
-  ("投稿済みキャプション全文"), so content exists, but slide art doesn't.
-  Confirm whether they're in scope for this Story series or if it starts at
-  5/7.
-- Order: oldest-first (1→17) is the natural default; confirm.
-- One Highlight for the whole series, or split by theme? Confirm before the
-  user does the manual Highlight step.
+Resolved (2026-09-23): **scope starts at 1本目** (posts 1–4/6 predate the
+`build_postN()` pipeline and have no slide art, but their full captions live
+in `docs/handover.md` section 7 — condense from there), **order is 1→17**.
+Still open: whether the finished set becomes one Highlight or several by
+theme — confirm before the user does the manual Highlight step.
 
-Technical approach once execution starts: for each past post, write a new
-`draw_story_*` call (reuse `draw_story_recruit_full()`'s pattern — kicker +
-title + a handful of condensed bullet points + DM CTA — as the template,
-adjusted per post's actual content) via `build_story_recruit()`-style
-one-off functions, or generalize into a single reusable
-`draw_story_summary(title, bullets, ...)` if doing many of these back-to-back
-(prefer the reusable version once it's clear this is a repeated pattern,
-per the project's own "don't over-engineer for a single use, but don't
-hand-roll near-duplicates either" balance). Follow the normal draft→approve
-flow (rule #1) for each day's condensed content before generating its image.
+Technical approach (built 2026-09-23): use the reusable
+`draw_story_summary(bg_path, out_path, kicker, title, bullets, dm_line,
+footer)` + `build_story_catchup(number, kicker, title, bullets, ...)` in
+`scripts/generate_all_slides.py` (a generalization of
+`draw_story_recruit_full()` — kicker number like "①" + title + 3–5 condensed
+bullet lines + DM CTA). Follow the normal draft→approve flow (rule #1) for
+each day's condensed content before generating its image. ①(1本目) is done:
+generated and scheduled for 2026-09-24 18:00 JST, Metricool ID `380671709`
+(scheduled a day out and at a different hour than that day's already-queued
+17本目 feed post at 10:00, per the user's own timing call — not a fixed rule,
+just what happened this time).
 7. **Every feed carousel post also gets an Instagram Story cross-post**,
    added 2026-09-23 per user request (previously undisclosed that Metricool
    even supports Stories — don't make that omission again). Reuse the
