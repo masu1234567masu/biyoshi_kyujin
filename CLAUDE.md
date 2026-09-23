@@ -39,12 +39,25 @@ work if this is your first turn in this repo — it has the exact commands.
    the user to tap-publish by hand in the Metricool app, rather than
    `createScheduledPost`/`updateScheduledPost` publishing unattended via the
    API. Revisit this once a few manually-tapped posts succeed without errors.
-6. **Fact-check concrete numbers before writing them into a caption** (tax
+6. **Before calling `updateScheduledPost` on any post, re-check that exact
+   post's current status with `getScheduledPosts` first — never reuse an
+   older status snapshot, especially when batch-fixing several posts at
+   once.** (2026-09-23: a batch reschedule of 13–16本目 reused a stale
+   `ERROR` snapshot for two posts whose *original* `autoPublish: true`
+   attempts had, unknown to us, already succeeded and gone live on
+   Instagram by the time we touched them. `updateScheduledPost` overwrites
+   the same uuid's date/content with no awareness of whether it already
+   published, so this left a phantom future-dated duplicate that would have
+   double-posted identical content. Caught only because the user checked
+   the Instagram app directly. If you ever find a duplicate like this,
+   neutralize it with `draft: true` via `updateScheduledPost` — there is no
+   delete tool for scheduled posts in this Metricool MCP server.)
+7. **Fact-check concrete numbers before writing them into a caption** (tax
    figures, percentages, deadlines, etc.) — use WebSearch, don't rely on
    memory or the client's recollection.
-7. **Never commit `secrets/`** (OAuth client secret, refresh token). It's
+8. **Never commit `secrets/`** (OAuth client secret, refresh token). It's
    gitignored; don't work around that.
-8. **After every meaningful change, update `docs/handover.md`** (captions,
+9. **After every meaningful change, update `docs/handover.md`** (captions,
    roadmap status, pipeline history with Metricool post IDs) and commit/push
    to `claude/automation-planning-verification-lcupt0`.
 
