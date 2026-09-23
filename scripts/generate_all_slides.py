@@ -1267,6 +1267,91 @@ def build_post16(materials_dir=SRC, out_dir=OUT):
     )
 
 
+# ==================== post17「フォロワーを増やすより、予約につなげる」 ====================
+# 7枚構成。他postと同じ関数群の組み合わせで作成。
+
+def build_post17(materials_dir=SRC, out_dir=OUT):
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+
+    beige_path = f"{materials_dir}/beige_texture.png"
+    logo_path = f"{materials_dir}/logo.jpeg"
+
+    # 背景生成
+    make_cover_bg(beige_path, f"{out_dir}/post17_bg_cover.jpg")
+    for i in range(2, 8):
+        make_logo_bg(logo_path, base_shade=224, seed=i + 1300,
+                     out_path=f"{out_dir}/post17_bg_slide{i}.jpg")
+
+    # 1枚目: 表紙
+    draw_cover_slide(
+        f"{out_dir}/post17_bg_cover.jpg", f"{out_dir}/post17_final_slide1.jpg",
+        ["フォロワーを増やすより、", "予約につなげる"],
+        subtitle="piece201 / Nakameguro, Tokyo"
+    )
+
+    # 2枚目: 導入
+    draw_title_body_slide(
+        f"{out_dir}/post17_bg_slide2.jpg", f"{out_dir}/post17_final_slide2.jpg",
+        title=None,
+        body_lines=[
+            "SNS発信というと、つい", "「フォロワー数」を追いかけがちですが、",
+            "本当に大事なのはそこではありません。"
+        ],
+        body_color=DARK
+    )
+
+    # 3枚目: ①プロフィールが「入口」になっているか
+    draw_title_body_slide(
+        f"{out_dir}/post17_bg_slide3.jpg", f"{out_dir}/post17_final_slide3.jpg",
+        title="①プロフィールが「入口」になっているか",
+        body_lines=[
+            "プロフィール欄にDM誘導や", "予約への案内がなければ、",
+            "どれだけ投稿を頑張っても、", "そこで導線が途切れてしまいます。"
+        ]
+    )
+
+    # 4枚目: ②ハイライトを「メニュー表」として使う
+    draw_title_body_slide(
+        f"{out_dir}/post17_bg_slide4.jpg", f"{out_dir}/post17_final_slide4.jpg",
+        title="②ハイライトを「メニュー表」として使う",
+        body_lines=[
+            "過去の投稿をハイライトに", "まとめておけば、",
+            "新規のお客様が一覧でスタイルや", "得意な技術を確認できます。"
+        ]
+    )
+
+    # 5枚目: ③ストーリーズで「今」を見せる
+    draw_title_body_slide(
+        f"{out_dir}/post17_bg_slide5.jpg", f"{out_dir}/post17_final_slide5.jpg",
+        title="③ストーリーズで「今」を見せる",
+        body_lines=[
+            "フィード投稿は作り込みが", "必要ですが、ストーリーズなら",
+            "空き状況や日常をもっと気軽に", "発信でき、親近感と",
+            "即効性につながります。"
+        ]
+    )
+
+    # 6枚目: ④追うべき指標はフォロワー数じゃない
+    draw_title_body_slide(
+        f"{out_dir}/post17_bg_slide6.jpg", f"{out_dir}/post17_final_slide6.jpg",
+        title="④追うべき指標はフォロワー数じゃない",
+        body_lines=[
+            "本当に見るべきは、", "保存数やDMの数。", "",
+            "バズらなくても、実際の行動", "(予約・問い合わせ)に",
+            "つながっているかが重要です。"
+        ]
+    )
+
+    # 7枚目: まとめ+締め(1枚に統合)
+    draw_closing_slide(
+        f"{out_dir}/post17_bg_slide7.jpg", f"{out_dir}/post17_final_slide7.jpg",
+        lead_lines=["発信の「量」より、", "予約までの「導線」を整えることが、"],
+        body_lines=["フリーランスの集客を", "安定させます。"],
+        dm_line="気になる方はDMで"
+    )
+
+
 if __name__ == "__main__":
     build_post7()
     print("post7 done")
@@ -1290,3 +1375,5 @@ if __name__ == "__main__":
     print("post15 done")
     build_post16()
     print("post16 done")
+    build_post17()
+    print("post17 done")
