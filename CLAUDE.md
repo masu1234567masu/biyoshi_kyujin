@@ -54,6 +54,13 @@ work if this is your first turn in this repo — it has the exact commands.
    future-dated duplicates for 15/16本目 — neutralized with `draft: true`
    once caught. No actual double-post resulted this time, confirmed via the
    Instagram grid, but don't count on that.)
+6. **Cadence: post as soon as content is ready, capped at 1/day, `autoPublish:
+   true`.** (Reverted 2026-09-23: the "space 3 days, `autoPublish: false`"
+   policy from #4/#5's incident was itself based on the false ERROR
+   diagnosis — the account handled daily `autoPublish: true` posting fine
+   for 11–16本目. The user explicitly asked to revert to daily cadence.) Use
+   `getScheduledPosts` to find the next open day and `getBestTimeToPostByNetwork`
+   for that day's best hour; schedule ≥20 min ahead per #3.
 7. **Fact-check concrete numbers before writing them into a caption** (tax
    figures, percentages, deadlines, etc.) — use WebSearch, don't rely on
    memory or the client's recollection.
