@@ -1352,6 +1352,166 @@ def build_post17(materials_dir=SRC, out_dir=OUT):
     )
 
 
+# ==================== ストーリーズ用「求人情報」（ハイライト固定用） ====================
+# 1080x1920の縦長。ハイライトに固定する求人情報の常設ストーリーズ、3枚構成。
+# フィード投稿(1080x1350)とはキャンバスサイズが異なるため専用の背景生成/描画関数を使う。
+
+STORY_TW, STORY_TH = 1080, 1920
+STORY_MAX_TEXT_W = STORY_TW - 160
+
+
+def make_story_cover_bg(beige_path, out_path):
+    beige = Image.open(beige_path).convert("RGB")
+    bg = cover_crop(beige, STORY_TW, STORY_TH)
+    bg.save(out_path, quality=93)
+
+
+def make_story_logo_bg(logo_path, base_shade, seed, out_path, watermark_opacity=20):
+    random.seed(seed)
+    bg = Image.new("RGB", (STORY_TW, STORY_TH), (base_shade, base_shade - 2, base_shade - 6))
+    draw = ImageDraw.Draw(bg)
+    for _ in range(4200):
+        x = random.randint(0, STORY_TW - 1)
+        y = random.randint(0, STORY_TH - 1)
+        shade = random.randint(-6, 6)
+        b = base_shade + shade
+        draw.point((x, y), fill=(b, b - 2, b - 5))
+    bg = bg.filter(ImageFilter.GaussianBlur(1.2))
+
+    bg = bg.convert("RGBA")
+    logo = Image.open(logo_path).convert("RGBA")
+    lw = int(STORY_TW * 0.5)
+    lh_ = int(logo.size[1] * (lw / logo.size[0]))
+    logo_r = logo.resize((lw, lh_), Image.LANCZOS).convert("RGBA")
+
+    data = logo_r.getdata()
+    new_data = []
+    for r, g, b, a in data:
+        if r > 235 and g > 235 and b > 235:
+            new_data.append((r, g, b, 0))
+        else:
+            new_data.append((r, g, b, watermark_opacity))
+    logo_r.putdata(new_data)
+
+    px = (STORY_TW - lw) // 2
+    py = (STORY_TH - lh_) // 2
+    bg.alpha_composite(logo_r, (px, py))
+    bg.convert("RGB").save(out_path, quality=93)
+
+
+def draw_story_cover_slide(bg_path, out_path, lines, subtitle=None):
+    img = Image.open(bg_path).convert("RGB")
+    d = ImageDraw.Draw(img)
+    cx = STORY_TW // 2
+    f_t = fit_font(FONT_SERIF_MED, 92, lines, STORY_MAX_TEXT_W)
+    t_h = lh(f_t, 1.4)
+
+    total = t_h * len(lines)
+    start_y = int((STORY_TH - total) / 2)
+    y = start_y
+    for line in lines:
+        draw_c(d, cx, y, line, f_t, DARK)
+        y += t_h
+
+    if subtitle:
+        draw_c(d, cx, STORY_TH - 130, subtitle, F(FONT_SANS_REG, 28), GRAY)
+
+    img.save(out_path, quality=93)
+
+
+def draw_story_title_body_slide(bg_path, out_path, title, body_lines,
+                                 title_color=DARK, body_color=GRAY):
+    img = Image.open(bg_path).convert("RGB")
+    d = ImageDraw.Draw(img)
+    cx = STORY_TW // 2
+
+    f_title = fit_font(FONT_SERIF_SEMI, 70, [title] if title else [], STORY_MAX_TEXT_W)
+    f_body = fit_font(FONT_SANS_MED, 48, body_lines, STORY_MAX_TEXT_W)
+
+    title_h = lh(f_title)
+    body_h = lh(f_body, 1.7)
+
+    total = title_h + 90 + body_h * len(body_lines)
+    start_y = int((STORY_TH - total) / 2)
+
+    y = start_y
+    if title:
+        draw_c(d, cx, y, title, f_title, title_color)
+        y += title_h + 90
+    for line in body_lines:
+        draw_c(d, cx, y, line, f_body, body_color)
+        y += body_h
+
+    img.save(out_path, quality=93)
+
+
+def draw_story_closing_slide(bg_path, out_path, lead_lines, body_lines, dm_line, footer="piece201"):
+    img = Image.open(bg_path).convert("RGB")
+    d = ImageDraw.Draw(img)
+    cx = STORY_TW // 2
+
+    f_lead = fit_font(FONT_SERIF_MED, 60, lead_lines, STORY_MAX_TEXT_W)
+    f_body = fit_font(FONT_SANS_MED, 46, body_lines + [dm_line], STORY_MAX_TEXT_W)
+    f_foot = F(FONT_SANS_MED, 30)
+
+    lead_h = lh(f_lead, 1.5)
+    body_h = lh(f_body, 1.6)
+    dm_h = lh(f_body, 1.3)
+
+    total = lead_h * len(lead_lines) + 80 + body_h * len(body_lines) + 90 + dm_h
+    start_y = int((STORY_TH - total) / 2) - 20
+    y = start_y
+    for line in lead_lines:
+        draw_c(d, cx, y, line, f_lead, DARK)
+        y += lead_h
+    y += 80
+    for line in body_lines:
+        draw_c(d, cx, y, line, f_body, GRAY)
+        y += body_h
+    y += 90
+    draw_c(d, cx, y, dm_line, f_body, MG)
+
+    draw_c(d, cx, STORY_TH - 130, footer, f_foot, GRAY)
+    img.save(out_path, quality=93)
+
+
+def build_story_recruit(materials_dir=SRC, out_dir=OUT):
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+
+    beige_path = f"{materials_dir}/beige_texture.png"
+    logo_path = f"{materials_dir}/logo.jpeg"
+
+    make_story_cover_bg(beige_path, f"{out_dir}/story_recruit_bg1.jpg")
+    make_story_logo_bg(logo_path, base_shade=224, seed=2001, out_path=f"{out_dir}/story_recruit_bg2.jpg")
+    make_story_logo_bg(logo_path, base_shade=224, seed=2002, out_path=f"{out_dir}/story_recruit_bg3.jpg")
+
+    # 1枚目: 表紙
+    draw_story_cover_slide(
+        f"{out_dir}/story_recruit_bg1.jpg", f"{out_dir}/story_recruit_final1.jpg",
+        ["RECRUIT", "フリーランススタイリスト募集"],
+        subtitle="piece201 / Nakameguro, Tokyo"
+    )
+
+    # 2枚目: 待遇
+    draw_story_title_body_slide(
+        f"{out_dir}/story_recruit_bg2.jpg", f"{out_dir}/story_recruit_final2.jpg",
+        title="待遇",
+        body_lines=[
+            "ポジション：スタイリスト(面貸し)", "対象：20代・30代", "",
+            "指名売上歩合70%", "自由出勤制"
+        ]
+    )
+
+    # 3枚目: piece201の強み + DM CTA
+    draw_story_closing_slide(
+        f"{out_dir}/story_recruit_bg3.jpg", f"{out_dir}/story_recruit_final3.jpg",
+        lead_lines=["piece201の強み"],
+        body_lines=["集客・SNS運用サポート", "技術サポート", "独立サポート", "税務・社会保険サポート"],
+        dm_line="気になる方はDMで"
+    )
+
+
 if __name__ == "__main__":
     build_post7()
     print("post7 done")
@@ -1377,3 +1537,5 @@ if __name__ == "__main__":
     print("post16 done")
     build_post17()
     print("post17 done")
+    build_story_recruit()
+    print("story_recruit done")
