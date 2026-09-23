@@ -68,6 +68,45 @@ work if this is your first turn in this repo — it has the exact commands.
    for 11–16本目. The user explicitly asked to revert to daily cadence.) Use
    `getScheduledPosts` to find the next open day and `getBestTimeToPostByNetwork`
    for that day's best hour; schedule ≥20 min ahead per #3.
+   **⚠️ SUPERSEDED as of 2026-09-23 — see the "Story catch-up initiative"
+   below: new feed carousel posts are paused for now in favor of a daily
+   Story series. Resume this cadence rule once the user says the catch-up
+   is done / gives the go-ahead to post new feed content again.**
+
+### Current initiative (as of 2026-09-23): Story catch-up series — read before doing any post work
+
+The user's instruction, verbatim intent: **pause new feed carousel posts**.
+Instead, **every day, condense one *past* feed post (1–17本目) into a single
+consolidated Story slide** (same idea as `draw_story_recruit_full()` /
+`build_story_recruit()` — one slide combining the post's cover title + its
+key points, instead of the original multi-slide carousel) and post it as
+that day's Story. Keep going one post per day until all past posts have
+been covered. **Once every past post has a Story, the user will create an
+Instagram Highlight from the full set** (Highlight creation itself is a
+manual Instagram-app step, not automatable — same limitation as the
+recruitment Highlight story).
+
+Open questions to resolve with the user before/at execution time (don't
+guess silently):
+- Scope: posts 1–4 and 6 predate the `build_postN()` pipeline and have no
+  generation code — their full captions live in `docs/handover.md` section 7
+  ("投稿済みキャプション全文"), so content exists, but slide art doesn't.
+  Confirm whether they're in scope for this Story series or if it starts at
+  5/7.
+- Order: oldest-first (1→17) is the natural default; confirm.
+- One Highlight for the whole series, or split by theme? Confirm before the
+  user does the manual Highlight step.
+
+Technical approach once execution starts: for each past post, write a new
+`draw_story_*` call (reuse `draw_story_recruit_full()`'s pattern — kicker +
+title + a handful of condensed bullet points + DM CTA — as the template,
+adjusted per post's actual content) via `build_story_recruit()`-style
+one-off functions, or generalize into a single reusable
+`draw_story_summary(title, bullets, ...)` if doing many of these back-to-back
+(prefer the reusable version once it's clear this is a repeated pattern,
+per the project's own "don't over-engineer for a single use, but don't
+hand-roll near-duplicates either" balance). Follow the normal draft→approve
+flow (rule #1) for each day's condensed content before generating its image.
 7. **Every feed carousel post also gets an Instagram Story cross-post**,
    added 2026-09-23 per user request (previously undisclosed that Metricool
    even supports Stories — don't make that omission again). Reuse the
