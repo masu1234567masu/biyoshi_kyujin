@@ -1466,6 +1466,56 @@ def build_story_recruit(materials_dir=SRC, out_dir=OUT):
     )
 
 
+def draw_story_summary(bg_path, out_path, kicker, title, bullets,
+                        dm_line="気になる方はDMで", footer="piece201 / Nakameguro, Tokyo"):
+    """過去投稿1本を1枚に凝縮するストーリーズ用の汎用レイアウト。
+    kicker(小さいラベル)＋title(見出し)＋bullets(要点)＋DM誘導を縦に積み上げる。"""
+    img = Image.open(bg_path).convert("RGB")
+    d = ImageDraw.Draw(img)
+    cx = STORY_TW // 2
+
+    f_kicker = F(FONT_SANS_MED, 34)
+    f_title = fit_font(FONT_SERIF_SEMI, 62, [title], STORY_MAX_TEXT_W)
+    f_body = fit_font(FONT_SANS_MED, 42, bullets, STORY_MAX_TEXT_W)
+    f_dm = F(FONT_SANS_MED, 40)
+    f_foot = F(FONT_SANS_MED, 28)
+
+    kicker_h = lh(f_kicker, 1.3)
+    title_h = lh(f_title, 1.3)
+    body_h = lh(f_body, 1.6)
+    dm_h = lh(f_dm, 1.3)
+
+    total = kicker_h + 20 + title_h + 70 + body_h * len(bullets) + 90 + dm_h
+    y = int((STORY_TH - total) / 2)
+
+    draw_c(d, cx, y, kicker, f_kicker, MG)
+    y += kicker_h + 20
+    draw_c(d, cx, y, title, f_title, DARK)
+    y += title_h + 70
+    for line in bullets:
+        draw_c(d, cx, y, line, f_body, GRAY)
+        y += body_h
+    y += 90
+    draw_c(d, cx, y, dm_line, f_dm, MG)
+
+    draw_c(d, cx, STORY_TH - 100, footer, f_foot, GRAY)
+    img.save(out_path, quality=93)
+
+
+def build_story_catchup(number, kicker, title, bullets, materials_dir=SRC, out_dir=OUT):
+    """過去投稿まとめストーリーズシリーズの1本を生成する。numberはファイル名の連番。"""
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+
+    logo_path = f"{materials_dir}/logo.jpeg"
+    bg_path = f"{out_dir}/story_catchup{number}_bg.jpg"
+    out_path = f"{out_dir}/story_catchup{number}_final.jpg"
+    make_story_logo_bg(logo_path, base_shade=224, seed=2100 + number, out_path=bg_path)
+
+    draw_story_summary(bg_path, out_path, kicker=kicker, title=title, bullets=bullets)
+    return out_path
+
+
 if __name__ == "__main__":
     build_post7()
     print("post7 done")
