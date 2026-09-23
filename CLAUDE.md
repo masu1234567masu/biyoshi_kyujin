@@ -26,32 +26,34 @@ work if this is your first turn in this repo — it has the exact commands.
    cause `createScheduledPost` to fail with "Publication date cannot be in the
    past" after Drive-upload delays eat the buffer — the retry then triggers a
    second write-permission prompt for the user.
-4. **Space posts at least 3 days apart, and vary the exact time and hashtag
-   set each time — never post daily.** (Revised 2026-09-18: the original
-   "1/day" cadence caused 13–15本目 to fail with Instagram's automated
-   `"We restrict certain activity to protect our community"` error after 5
-   straight days of identical-time, identical-format API posts — a classic
-   bot-pattern flag. Check `getScheduledPosts` for the next open slot ≥3 days
-   out, and deliberately avoid picking the same hour every time even when
-   `getBestTimeToPostByNetwork` ranks it highest for multiple days in a row.)
-5. **Until the account's posting is confirmed stable again, schedule new
-   posts with `autoPublish: false`** so they land as a push notification for
-   the user to tap-publish by hand in the Metricool app, rather than
-   `createScheduledPost`/`updateScheduledPost` publishing unattended via the
-   API. Revisit this once a few manually-tapped posts succeed without errors.
-6. **Before calling `updateScheduledPost` on any post, re-check that exact
-   post's current status with `getScheduledPosts` first — never reuse an
-   older status snapshot, especially when batch-fixing several posts at
-   once.** (2026-09-23: a batch reschedule of 13–16本目 reused a stale
-   `ERROR` snapshot for two posts whose *original* `autoPublish: true`
-   attempts had, unknown to us, already succeeded and gone live on
-   Instagram by the time we touched them. `updateScheduledPost` overwrites
-   the same uuid's date/content with no awareness of whether it already
-   published, so this left a phantom future-dated duplicate that would have
-   double-posted identical content. Caught only because the user checked
-   the Instagram app directly. If you ever find a duplicate like this,
-   neutralize it with `draft: true` via `updateScheduledPost` — there is no
-   delete tool for scheduled posts in this Metricool MCP server.)
+4. **`getScheduledPosts`'s `status`/`detailedStatus` field for Instagram posts
+   is not reliable — it has shown `"ERROR"` (`"We restrict certain activity to
+   protect our community..."`) for posts that had, in fact, already published
+   successfully.** (Discovered 2026-09-23: 13–15本目 all showed `ERROR` on
+   2026-09-17/18, which was read as a real Instagram auto-restriction and
+   drove a whole cadence-policy change — daily posting → 3-day spacing,
+   `autoPublish: false`. Checking the Instagram Posts analytics connector
+   (`getAnalyticsDataByMetrics` with `IGPO01/02/03/06` on the `posts`
+   connector for `instagram`) later showed 11–16本目 *all* actually
+   auto-published on schedule, one per day, 9/13–9/18. The daily cadence was
+   never the problem; there is no confirmed bot-pattern restriction on this
+   account.** Before treating a `getScheduledPosts` error as real, cross-check
+   with the analytics connector (it reflects Instagram's own post history,
+   not Metricool's internal scheduling state) or ask the user to check the
+   Instagram app directly — don't diagnose or change policy off
+   `getScheduledPosts` status alone.
+5. **Before calling `updateScheduledPost` on any post, re-check that exact
+   post's current status first (ideally via the analytics connector, not
+   just `getScheduledPosts` — see #4) — never reuse an older status
+   snapshot, especially when batch-fixing several posts at once.**
+   (2026-09-18: a batch reschedule of 13–16本目 reused a stale `ERROR`
+   snapshot for posts whose *original* `autoPublish: true` attempts had,
+   unknown to us, already succeeded and gone live on Instagram.
+   `updateScheduledPost` overwrites the same uuid's date/content with no
+   awareness of whether it already published, so this left phantom
+   future-dated duplicates for 15/16本目 — neutralized with `draft: true`
+   once caught. No actual double-post resulted this time, confirmed via the
+   Instagram grid, but don't count on that.)
 7. **Fact-check concrete numbers before writing them into a caption** (tax
    figures, percentages, deadlines, etc.) — use WebSearch, don't rely on
    memory or the client's recollection.
