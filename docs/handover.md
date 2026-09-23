@@ -810,6 +810,40 @@ Q5. 申告を怠るとどうなる？
 - **連携済みSNS**：Instagram「freelance_biyoshi_kyujin」
 - **タイムゾーン**：Asia/Tokyo
 
+### ⚠️ 重大インシデント記録：2026-09-17〜23「Instagram自動制限」誤診断事件（原因・影響・再発防止策）
+
+**何が起きたか（時系列）**
+1. 2026-09-17、`getScheduledPosts`で確認したところ、13本目（常連客/9-15予約）・14本目（独立後のギャップ集/9-16予約）・15本目（確定申告Q&A/9-17予約）の3件が`status: "ERROR"`、`detailedStatus: "We restrict certain activity to protect our community. Tell us if you think we made a mistake."`と表示されていた
+2. これを見て「11・12本目までは毎日10:00の同時刻・同じキャプション構成でAPI自動投稿が成功していたが、5日連続で続けたことがInstagram側のボット的パターン検知（自動制限）を引き起こした」と判断した
+3. 2026-09-18、この誤った前提に基づき、13〜16本目を`updateScheduledPost`で一括再スケジュール（日程を3日以上空ける・時刻を毎回変える・`autoPublish: false`に変更）。この際、15・16本目については「本当にまだ失敗中か」を直前に再確認せずに処理してしまい、実際にはすでに公開済みだった投稿の記録を「未来にまだ予約中」という誤った状態に上書きしてしまった（詳細は下の「教訓」参照）
+4. 2026-09-20・23に、13・14本目を手動タップで「公開」した（実際には既に公開済みだったため、この操作は重複投稿を生まなかったと後で確認）
+5. 2026-09-23、増田氏がInstagramアプリのスクリーンショットを提示し「15本目・16本目がすでに5日前に投稿されている」と指摘。これを受けて`getAnalyticsDataByMetrics`（`network: instagram`, `connector: posts`, フィールド`IGPO01`〜`IGPO06`）でInstagram自体の投稿実データを取得し、裏取りを行った
+
+**根本原因（確定）**
+`getScheduledPosts`が返す予約ステータス（`status`/`detailedStatus`）は、**Metricoolの予約管理モジュール内部の表示であり、Instagramへの実際の公開結果を必ずしも正確に反映しない**。13〜16本目は実際には元の予約(`autoPublish: true`)で一度もエラーなく公開に成功していた（下表）。「Instagram側の自動投稿制限」という説明そのものが誤りだった。Meta側のスパム検知が働いた証拠は最終的に一つも見つからなかった。
+
+| # | 実際の公開日時(JST) | Instagram投稿URL |
+|---|---|---|
+| 11本目 | 2026-09-13 10:03 | https://www.instagram.com/p/DdNVb-ACKxP/ |
+| 12本目 | 2026-09-14 10:03 | https://www.instagram.com/p/DdP6PKcCnB8/ |
+| 13本目 | 2026-09-15 10:03 | https://www.instagram.com/p/DdSfDqnCiGo/ |
+| 14本目 | 2026-09-16 10:03 | https://www.instagram.com/p/DdVD1zrCot0/ |
+| 15本目 | 2026-09-17 10:03 | https://www.instagram.com/p/DdXooKWCrVB/ |
+| 16本目 | 2026-09-18 10:03 | https://www.instagram.com/p/DdaNaSbisDB/ |
+
+**実害の有無**
+2026-09-01〜9-18の全投稿（1〜16本目のうちMetricool管理下の13本）を`getAnalyticsDataByMetrics`で洗い直した結果、**欠落・重複ともに一切なし**。13〜16本目の誤った再スケジュール・手動タップ操作は、結果的に実害（重複投稿）を生まなかった。ただし、これは結果オーライであり、`updateScheduledPost`の仕様上（同一uuidの日時を無条件に上書きする、公開済みかどうかのチェックをしない）、一歩間違えば重複投稿になっていた。
+
+**とった対応**
+- 誤って残っていた15・16本目の重複予約（9/26・9/29予定）は`draft: true`に変更し、無効化した（新ID：15本目`380627101`、16本目`380627245`）
+- 「投稿間隔3日・`autoPublish: false`」という誤った前提の運用変更は、増田氏の指示で2026-09-23に元の「1日1本ペース・`autoPublish: true`」に復元した
+
+**再発防止策（今後のCLAUDE.md/運用ルールに反映済み）**
+1. **`getScheduledPosts`のステータス表示だけを根拠に「投稿が失敗した」と判断しない。** 疑わしい場合は`getAnalyticsAvailableMetrics`（`network: instagram`, `connector: posts`）→`getAnalyticsDataByMetrics`（フィールド`IGPO01`=投稿日, `IGPO02`=投稿日時, `IGPO03`=本文, `IGPO06`=投稿URL）でInstagram自体の投稿実データを取得し、裏取りする。これがInstagramの状態を確認する標準手順（Instagram本体のWebサイト・アプリへの直接アクセスはネットワーク制限でできないため、この分析APIが最も信頼できる代替手段）
+2. **複数の投稿をまとめて`updateScheduledPost`で再スケジュールする前に、1件ずつ直前の最新状態を確認する。** 特に元の予約時刻が「作業時点より過去」のものは要注意（すでに公開済みの可能性があるため）
+3. **重複予約に気づいたら`draft: true`で無効化する**（Metricoolに投稿の削除専用ツールは存在しない）
+4. 運用方針（投稿頻度・autoPublish設定など）を変更する際は、変更の根拠となった事象がMetricoolの表示バグではなく実際にInstagram側で起きたことかを、上記の分析API裏取りをしてから判断する
+
 ### Facebook連携で発生した問題と解決策（重要な教訓）
 InstagramをMetricool経由で自動投稿するには、Meta仕様上「Instagramがビジネス/クリエイターアカウントであること」「Facebookページとリンクされていること」の両方が必須。
 

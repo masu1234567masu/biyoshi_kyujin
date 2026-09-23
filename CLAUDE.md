@@ -41,7 +41,14 @@ work if this is your first turn in this repo — it has the exact commands.
    with the analytics connector (it reflects Instagram's own post history,
    not Metricool's internal scheduling state) or ask the user to check the
    Instagram app directly — don't diagnose or change policy off
-   `getScheduledPosts` status alone.
+   `getScheduledPosts` status alone. Note: fetching instagram.com directly
+   (WebFetch) is blocked by network egress policy in this environment — the
+   analytics connector is the only way to check Instagram's actual state
+   from here. To pull the real post history: `getAnalyticsAvailableMetrics`
+   (`network: instagram`, `connector: posts`) to see fields, then
+   `getAnalyticsDataByMetrics` with `["IGPO01","IGPO02","IGPO03","IGPO06"]`
+   (date / datetime / caption / post URL) over the date range in question.
+   Full incident writeup: `docs/handover.md` section 11, "重大インシデント記録".
 5. **Before calling `updateScheduledPost` on any post, re-check that exact
    post's current status first (ideally via the analytics connector, not
    just `getScheduledPosts` — see #4) — never reuse an older status
