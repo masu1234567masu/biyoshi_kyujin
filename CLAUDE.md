@@ -68,14 +68,26 @@ work if this is your first turn in this repo — it has the exact commands.
    for 11–16本目. The user explicitly asked to revert to daily cadence.) Use
    `getScheduledPosts` to find the next open day and `getBestTimeToPostByNetwork`
    for that day's best hour; schedule ≥20 min ahead per #3.
-7. **Fact-check concrete numbers before writing them into a caption** (tax
+7. **Every feed carousel post also gets an Instagram Story cross-post**,
+   added 2026-09-23 per user request (previously undisclosed that Metricool
+   even supports Stories — don't make that omission again). Reuse the
+   post's slide-1 cover image as-is (no new image generation needed);
+   schedule it as a separate `createScheduledPost` call with
+   `instagramData.type: "STORY"`, `providers: [{"network":"instagram"}]`,
+   and **no `text` field** (Stories carry no caption — sending one when a
+   Story is the only network in the post publishes nowhere, per the tool's
+   own docs). Schedule it ≥20 min out like the feed post. This is a
+   traffic-driving teaser ("new post is up, check the feed"), not a full
+   restatement of the carousel — do not build separate Story-sized (1080×1920)
+   art for it unless the user asks.
+8. **Fact-check concrete numbers before writing them into a caption** (tax
    figures, percentages, deadlines, etc.) — use WebSearch, don't rely on
    memory or the client's recollection.
-8. **Never commit `secrets/`** (OAuth client secret, refresh token). It's
+9. **Never commit `secrets/`** (OAuth client secret, refresh token). It's
    gitignored; don't work around that.
-9. **After every meaningful change, update `docs/handover.md`** (captions,
-   roadmap status, pipeline history with Metricool post IDs) and commit/push
-   to `claude/automation-planning-verification-lcupt0`.
+10. **After every meaningful change, update `docs/handover.md`** (captions,
+    roadmap status, pipeline history with Metricool post IDs) and commit/push
+    to `claude/automation-planning-verification-lcupt0`.
 
 ## Commands
 
