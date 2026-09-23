@@ -1360,12 +1360,6 @@ STORY_TW, STORY_TH = 1080, 1920
 STORY_MAX_TEXT_W = STORY_TW - 160
 
 
-def make_story_cover_bg(beige_path, out_path):
-    beige = Image.open(beige_path).convert("RGB")
-    bg = cover_crop(beige, STORY_TW, STORY_TH)
-    bg.save(out_path, quality=93)
-
-
 def make_story_logo_bg(logo_path, base_shade, seed, out_path, watermark_opacity=20):
     random.seed(seed)
     bg = Image.new("RGB", (STORY_TW, STORY_TH), (base_shade, base_shade - 2, base_shade - 6))
@@ -1399,79 +1393,64 @@ def make_story_logo_bg(logo_path, base_shade, seed, out_path, watermark_opacity=
     bg.convert("RGB").save(out_path, quality=93)
 
 
-def draw_story_cover_slide(bg_path, out_path, lines, subtitle=None):
-    img = Image.open(bg_path).convert("RGB")
-    d = ImageDraw.Draw(img)
-    cx = STORY_TW // 2
-    f_t = fit_font(FONT_SERIF_MED, 92, lines, STORY_MAX_TEXT_W)
-    t_h = lh(f_t, 1.4)
-
-    total = t_h * len(lines)
-    start_y = int((STORY_TH - total) / 2)
-    y = start_y
-    for line in lines:
-        draw_c(d, cx, y, line, f_t, DARK)
-        y += t_h
-
-    if subtitle:
-        draw_c(d, cx, STORY_TH - 130, subtitle, F(FONT_SANS_REG, 28), GRAY)
-
-    img.save(out_path, quality=93)
-
-
-def draw_story_title_body_slide(bg_path, out_path, title, body_lines,
-                                 title_color=DARK, body_color=GRAY):
+def draw_story_recruit_full(bg_path, out_path):
+    """求人ハイライト用ストーリーズを1枚に統合したレイアウト。
+    表紙見出し＋サロン情報＋待遇＋piece201の強み＋DM誘導をすべて縦に積み上げる。"""
     img = Image.open(bg_path).convert("RGB")
     d = ImageDraw.Draw(img)
     cx = STORY_TW // 2
 
-    f_title = fit_font(FONT_SERIF_SEMI, 70, [title] if title else [], STORY_MAX_TEXT_W)
-    f_body = fit_font(FONT_SANS_MED, 48, body_lines, STORY_MAX_TEXT_W)
+    f_kicker = F(FONT_SANS_MED, 34)
+    f_title = fit_font(FONT_SERIF_SEMI, 62, ["フリーランススタイリスト募集"], STORY_MAX_TEXT_W)
+    f_salon = F(FONT_SANS_REG, 30)
+    f_label = F(FONT_SERIF_MED, 44)
+    f_dm = F(FONT_SANS_MED, 40)
+    f_foot = F(FONT_SANS_MED, 28)
 
-    title_h = lh(f_title)
-    body_h = lh(f_body, 1.7)
+    taigu_lines = ["ポジション：スタイリスト(面貸し)", "対象：20代・30代",
+                   "指名売上歩合70%", "自由出勤制"]
+    tsuyomi_lines = ["集客・SNS運用サポート", "技術サポート",
+                      "独立サポート", "税務・社会保険サポート"]
+    f_body = fit_font(FONT_SANS_MED, 38, taigu_lines + tsuyomi_lines, STORY_MAX_TEXT_W)
 
-    total = title_h + 90 + body_h * len(body_lines)
-    start_y = int((STORY_TH - total) / 2)
+    kicker_h = lh(f_kicker, 1.3)
+    title_h = lh(f_title, 1.3)
+    salon_h = lh(f_salon, 1.3)
+    label_h = lh(f_label, 1.3)
+    body_h = lh(f_body, 1.5)
+    dm_h = lh(f_dm, 1.3)
 
-    y = start_y
-    if title:
-        draw_c(d, cx, y, title, f_title, title_color)
-        y += title_h + 90
-    for line in body_lines:
-        draw_c(d, cx, y, line, f_body, body_color)
-        y += body_h
+    total = (
+        kicker_h + 15 + title_h + 25 + salon_h + 65
+        + label_h + 15 + body_h * len(taigu_lines) + 55
+        + label_h + 15 + body_h * len(tsuyomi_lines) + 75
+        + dm_h
+    )
+    y = int((STORY_TH - total) / 2)
 
-    img.save(out_path, quality=93)
+    draw_c(d, cx, y, "RECRUIT", f_kicker, MG)
+    y += kicker_h + 15
+    draw_c(d, cx, y, "フリーランススタイリスト募集", f_title, DARK)
+    y += title_h + 25
+    draw_c(d, cx, y, "piece201 / 中目黒駅から徒歩1分", f_salon, GRAY)
+    y += salon_h + 65
 
-
-def draw_story_closing_slide(bg_path, out_path, lead_lines, body_lines, dm_line, footer="piece201"):
-    img = Image.open(bg_path).convert("RGB")
-    d = ImageDraw.Draw(img)
-    cx = STORY_TW // 2
-
-    f_lead = fit_font(FONT_SERIF_MED, 60, lead_lines, STORY_MAX_TEXT_W)
-    f_body = fit_font(FONT_SANS_MED, 46, body_lines + [dm_line], STORY_MAX_TEXT_W)
-    f_foot = F(FONT_SANS_MED, 30)
-
-    lead_h = lh(f_lead, 1.5)
-    body_h = lh(f_body, 1.6)
-    dm_h = lh(f_body, 1.3)
-
-    total = lead_h * len(lead_lines) + 80 + body_h * len(body_lines) + 90 + dm_h
-    start_y = int((STORY_TH - total) / 2) - 20
-    y = start_y
-    for line in lead_lines:
-        draw_c(d, cx, y, line, f_lead, DARK)
-        y += lead_h
-    y += 80
-    for line in body_lines:
+    draw_c(d, cx, y, "待遇", f_label, DARK)
+    y += label_h + 15
+    for line in taigu_lines:
         draw_c(d, cx, y, line, f_body, GRAY)
         y += body_h
-    y += 90
-    draw_c(d, cx, y, dm_line, f_body, MG)
+    y += 55
 
-    draw_c(d, cx, STORY_TH - 130, footer, f_foot, GRAY)
+    draw_c(d, cx, y, "piece201の強み", f_label, DARK)
+    y += label_h + 15
+    for line in tsuyomi_lines:
+        draw_c(d, cx, y, line, f_body, GRAY)
+        y += body_h
+    y += 75
+
+    draw_c(d, cx, y, "気になる方はDMで", f_dm, MG)
+    draw_c(d, cx, STORY_TH - 100, "piece201 / Nakameguro, Tokyo", f_foot, GRAY)
     img.save(out_path, quality=93)
 
 
@@ -1479,36 +1458,11 @@ def build_story_recruit(materials_dir=SRC, out_dir=OUT):
     import os
     os.makedirs(out_dir, exist_ok=True)
 
-    beige_path = f"{materials_dir}/beige_texture.png"
     logo_path = f"{materials_dir}/logo.jpeg"
+    make_story_logo_bg(logo_path, base_shade=224, seed=2001, out_path=f"{out_dir}/story_recruit_bg1.jpg")
 
-    make_story_cover_bg(beige_path, f"{out_dir}/story_recruit_bg1.jpg")
-    make_story_logo_bg(logo_path, base_shade=224, seed=2001, out_path=f"{out_dir}/story_recruit_bg2.jpg")
-    make_story_logo_bg(logo_path, base_shade=224, seed=2002, out_path=f"{out_dir}/story_recruit_bg3.jpg")
-
-    # 1枚目: 表紙
-    draw_story_cover_slide(
-        f"{out_dir}/story_recruit_bg1.jpg", f"{out_dir}/story_recruit_final1.jpg",
-        ["RECRUIT", "フリーランススタイリスト募集"],
-        subtitle="piece201 / Nakameguro, Tokyo"
-    )
-
-    # 2枚目: 待遇
-    draw_story_title_body_slide(
-        f"{out_dir}/story_recruit_bg2.jpg", f"{out_dir}/story_recruit_final2.jpg",
-        title="待遇",
-        body_lines=[
-            "ポジション：スタイリスト(面貸し)", "対象：20代・30代", "",
-            "指名売上歩合70%", "自由出勤制"
-        ]
-    )
-
-    # 3枚目: piece201の強み + DM CTA
-    draw_story_closing_slide(
-        f"{out_dir}/story_recruit_bg3.jpg", f"{out_dir}/story_recruit_final3.jpg",
-        lead_lines=["piece201の強み"],
-        body_lines=["集客・SNS運用サポート", "技術サポート", "独立サポート", "税務・社会保険サポート"],
-        dm_line="気になる方はDMで"
+    draw_story_recruit_full(
+        f"{out_dir}/story_recruit_bg1.jpg", f"{out_dir}/story_recruit_final1.jpg"
     )
 
 
