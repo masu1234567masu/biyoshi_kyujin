@@ -24,8 +24,10 @@ work if this is your first turn in this repo — it has the exact commands.
    images is not permission to post.
 3. **Schedule at least 20 minutes ahead of the current time.** Shorter buffers
    cause `createScheduledPost` to fail with "Publication date cannot be in the
-   past" after Drive-upload delays eat the buffer — the retry then triggers a
-   second write-permission prompt for the user.
+   past" — cloud sessions can have long, unpredictable real-time gaps between
+   turns (seen gaps of 10+ hours between consecutive messages), so always
+   re-run `date` to get the actual current time immediately before computing
+   publish times — never reuse a time computed earlier in the conversation.
 4. **`getScheduledPosts`'s `status`/`detailedStatus` field for Instagram posts
    is not reliable — it has shown `"ERROR"` (`"We restrict certain activity to
    protect our community..."`) for posts that had, in fact, already published
@@ -128,12 +130,46 @@ removed. Full schedule (all daily at 18:00 JST, `autoPublish: true`):
 | 16 | 2026-10-09 | `380675599` |
 | 17 | 2026-10-10 | `380675644` |
 
-Nothing left to build for this initiative — just let it post out day by day.
-Once 17 has posted (2026-10-10), remind the user it's their turn to
-manually create the Instagram Highlight, and confirm with them then whether
-it's one Highlight or split by theme (still open). Do not resume the
-paused feed-carousel cadence (rule #6 above) until the user explicitly says
-so.
+**Update 2026-10-11: 1–16本目 had to be reposted** — all 17 had published
+correctly, but Instagram's "ストーリーズをアーカイブに保存" setting was OFF the
+whole time (see hard rule #11), so only the still-active 17本目 (posted
+2026-10-10) was recoverable when the user went to build the Highlight;
+1–16本目 had already expired and vanished with no archive copy. User turned
+the setting ON, then approved reposting 1–16本目 "全部今日中に数分おきで一気に"
+(this is also where the Drive→GitHub-raw-URL media hosting change above was
+made, triggered by this repost hitting a broken Drive/OAuth setup in a fresh
+container). Reposted via `createScheduledPost` with GitHub raw URLs, no Drive
+involved, 5 min apart, all `autoPublish: true`:
+
+| # | new publish (JST) | new Metricool ID |
+|---|--------------------|--------------------|
+| 1 | 2026-10-12 00:30 | `393325633` |
+| 2 | 2026-10-12 00:35 | `393325658` |
+| 3 | 2026-10-12 00:40 | `393325698` |
+| 4 | 2026-10-12 00:45 | `393325741` |
+| 5 | 2026-10-12 00:50 | `393325774` |
+| 6 | 2026-10-12 00:55 | `393325819` |
+| 7 | 2026-10-12 01:00 | `393325845` |
+| 8 | 2026-10-12 01:05 | `393325873` |
+| 9 | 2026-10-12 01:10 | `393325916` |
+| 10 | 2026-10-12 01:15 | `393325949` |
+| 11 | 2026-10-12 01:20 | `393325989` |
+| 12 | 2026-10-12 01:25 | `393326024` |
+| 13 | 2026-10-12 01:30 | `393326076` |
+| 14 | 2026-10-12 01:35 | `393326114` |
+| 15 | 2026-10-12 01:40 | `393326255` |
+| 16 | 2026-10-12 01:45 | `393326294` |
+
+17本目 (original, archive setting now ON) does not need reposting. The
+recruitment Highlight story (`380667330`, posted 2026-09-23, also predates
+the archive-setting fix) is **likely also lost** — not yet reposted, flagged
+to the user, waiting on their go-ahead.
+
+Once the reposted 1–16 + original 17 have all posted, remind the user it's
+their turn to manually create the Instagram Highlight, and confirm with them
+then whether it's one Highlight or split by theme (still open). Do not
+resume the paused feed-carousel cadence (rule #6 above) until the user
+explicitly says so.
 7. **Every feed carousel post also gets an Instagram Story cross-post**,
    added 2026-09-23 per user request (previously undisclosed that Metricool
    even supports Stories — don't make that omission again). Reuse the
@@ -151,48 +187,57 @@ so.
    memory or the client's recollection.
 9. **Never commit `secrets/`** (OAuth client secret, refresh token). It's
    gitignored; don't work around that.
+   **⚠️ SUPERSEDED as of 2026-10-11 — Drive/OAuth is retired from the
+   pipeline (see "Media hosting" below), so this rule is now moot for normal
+   posting. Kept only in case `secrets/` ever comes back for some other
+   purpose.**
 10. **After every meaningful change, update `docs/handover.md`** (captions,
     roadmap status, pipeline history with Metricool post IDs) and commit/push
     to `claude/automation-planning-verification-lcupt0`.
+11. **If Instagram's "ストーリーズをアーカイブに保存" setting is ever OFF, any
+    Story published is unrecoverable 24h later — not even via the account's
+    own Archive.** (Discovered 2026-10-11: all 17 catch-up Stories + the
+    recruitment Highlight story were posted successfully but the archive
+    setting was off the whole time, so by the time the user went to build the
+    Instagram Highlight, 1–16本目 had vanished — only the still-active 17本目
+    was recoverable. The user confirmed in Instagram Settings → Privacy →
+    Story that "アーカイブに保存" was OFF and turned it ON.) Before any future
+    Story campaign, confirm this setting is ON — ask the user to check once,
+    it's a one-time account setting, not per-post.
 
-## Commands
+## Media hosting (for Metricool's `media` field)
 
-Generate one post's images (from repo root):
-```bash
-python3 -c "
-import scripts.generate_all_slides as g
-g.build_postN(materials_dir='./assets/materials', out_dir='./assets/posts/postN')
-"
+**Use the GitHub raw URL of the already-committed image — do not use Google
+Drive.** `createScheduledPost`'s `media` field needs a public URL; since every
+generated image is committed and pushed to this repo anyway (hard rule #10),
+and the repo is public, `https://raw.githubusercontent.com/<owner>/<repo>/<branch>/<path>`
+is a public URL with zero extra steps:
+
 ```
-`SRC`/`OUT` in `generate_all_slides.py` default to `./materials` / `./output`
-(relative to cwd), which don't exist at repo root — always pass
-`materials_dir='./assets/materials'` and `out_dir='./assets/posts/postN'`
-explicitly, or the script fails with `FileNotFoundError`.
-
-Upload generated slides to Drive (needed before Metricool can ingest them —
-`createScheduledPost`'s `media` field requires public URLs, not local paths):
-```bash
-OAUTHLIB_INSECURE_TRANSPORT=1 python3 scripts/drive_upload.py assets/posts/postN/postN_final_slide1.jpg ...
-```
-Delete them from Drive once Metricool's response shows the URLs converted to
-`static.metricool.com` (safe to delete only after that confirmation):
-```bash
-OAUTHLIB_INSECURE_TRANSPORT=1 python3 scripts/drive_upload.py delete <fileId> ...
+https://raw.githubusercontent.com/masu1234567masu/biyoshi_kyujin/claude/automation-planning-verification-lcupt0/assets/posts/<dir>/<file>.jpg
 ```
 
-Re-authenticate Drive OAuth when uploads fail with `invalid_grant: Token has
-been expired or revoked`:
-```bash
-python3 scripts/oauth_step1_get_auth_url.py   # prints a URL for the user to open + approve
-# user pastes back the resulting http://localhost/?state=...&code=... URL (it 404s, that's expected)
-OAUTHLIB_INSECURE_TRANSPORT=1 python3 scripts/oauth_step2_exchange_code.py "<that URL>"
-```
+Order of operations: generate → **commit & push first** → then schedule with
+the raw URL (Metricool fetches it live, so the push must land before the
+`createScheduledPost` call) → no cleanup step needed (nothing to delete,
+unlike Drive).
+
+**⚠️ Retired 2026-10-11 — do not use `scripts/drive_upload.py` /
+`scripts/oauth_step1_get_auth_url.py` / `scripts/oauth_step2_exchange_code.py`
+for new posts.** They're left in the repo for reference only. Reason: this
+runs in an ephemeral cloud container that's wiped on every new session, and
+`secrets/` is (correctly) gitignored — so every session needed a fresh,
+human-in-the-loop OAuth re-consent before any image could be scheduled. That
+friction (and the 2026-10-11 incident where a container reset also lost the
+one-time `oauth_client_secret.json` itself, blocking re-auth entirely until
+the user re-supplied it) is exactly what the GitHub-raw-URL approach
+eliminates — no credentials, no re-auth, ever.
 
 ## Architecture
 
-Pipeline: **draft/approve → generate images (Pillow) → upload to Drive for a
-public URL → `createScheduledPost` via the Metricool MCP tool → delete Drive
-temp files → update handover.md → commit/push.**
+Pipeline: **draft/approve → generate images (Pillow) → commit & push to get a
+public GitHub raw URL → `createScheduledPost` via the Metricool MCP tool →
+update handover.md → commit/push.**
 
 `scripts/generate_all_slides.py` is one file containing every post's image
 recipe. Each post is a `build_postN()` function (N = 5, 7–16 so far) that
@@ -212,9 +257,10 @@ to the `if __name__ == "__main__"` block at the bottom, generate, then eyeball
 the rendered slides (Read tool) before uploading — especially cover slides
 and any comparison tables, where overflow bugs have happened before.
 
-`config/drive_config.json` holds the Metricool `brandId` (`6852890`),
-timezone (`Asia/Tokyo`), and the Drive upload folder ID — read from there
-rather than hardcoding if it might change.
+`config/drive_config.json` holds the Metricool `brandId` (`6852890`) and
+timezone (`Asia/Tokyo`) — read from there rather than hardcoding if it might
+change. (It also still has Drive-related fields from the retired upload
+path; ignore those — see "Media hosting" above.)
 
 ## Content/domain knowledge worth knowing upfront
 
