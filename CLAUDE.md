@@ -161,15 +161,17 @@ involved, 5 min apart, all `autoPublish: true`:
 | 16 | 2026-10-12 01:45 | `393326294` |
 
 17本目 (original, archive setting now ON) does not need reposting. The
-recruitment Highlight story (`380667330`, posted 2026-09-23, also predates
-the archive-setting fix) is **likely also lost** — not yet reposted, flagged
-to the user, waiting on their go-ahead.
+recruitment Highlight story (`380667330`, posted 2026-09-23, also predated
+the archive-setting fix) was **also reposted 2026-10-12**, approved by the
+user — new Metricool ID `393329116`, scheduled 2026-10-12 00:35 JST (ahead of
+the 1–16 repost batch so it doesn't collide), via the same GitHub raw URL
+method (`assets/posts/story_recruit/story_recruit_final1.jpg`).
 
-Once the reposted 1–16 + original 17 have all posted, remind the user it's
-their turn to manually create the Instagram Highlight, and confirm with them
-then whether it's one Highlight or split by theme (still open). Do not
-resume the paused feed-carousel cadence (rule #6 above) until the user
-explicitly says so.
+Once the reposted 1–16 + recruitment story + original 17 have all posted,
+remind the user it's their turn to manually create the Instagram Highlight,
+and confirm with them then whether it's one Highlight or split by theme
+(still open). Do not resume the paused feed-carousel cadence (rule #6 above)
+until the user explicitly says so.
 7. **Every feed carousel post also gets an Instagram Story cross-post**,
    added 2026-09-23 per user request (previously undisclosed that Metricool
    even supports Stories — don't make that omission again). Reuse the
