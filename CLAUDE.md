@@ -167,11 +167,15 @@ user — new Metricool ID `393329116`, scheduled 2026-10-12 00:35 JST (ahead of
 the 1–16 repost batch so it doesn't collide), via the same GitHub raw URL
 method (`assets/posts/story_recruit/story_recruit_final1.jpg`).
 
-Once the reposted 1–16 + recruitment story + original 17 have all posted,
-remind the user it's their turn to manually create the Instagram Highlight,
-and confirm with them then whether it's one Highlight or split by theme
-(still open). Do not resume the paused feed-carousel cadence (rule #6 above)
-until the user explicitly says so.
+**Confirmed 2026-10-12: all 18 posts (reposted 1–16 + recruitment story +
+original 17) show `PUBLISHED` in `getScheduledPosts` with real Instagram
+story URLs.** This batch posted after the archive setting was turned ON, so
+it should persist in the account's Archive this time (unlike the first
+attempt — see hard rule #11). User has been told it's their turn to manually
+create the Instagram Highlight; whether it's one Highlight or split by theme
+is still their call. Do not resume the paused feed-carousel cadence (rule #6
+above) until the user explicitly says so — this is the last open item
+blocking that.
 7. **Every feed carousel post also gets an Instagram Story cross-post**,
    added 2026-09-23 per user request (previously undisclosed that Metricool
    even supports Stories — don't make that omission again). Reuse the
