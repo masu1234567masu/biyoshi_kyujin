@@ -1516,6 +1516,64 @@ def build_story_catchup(number, kicker, title, bullets, materials_dir=SRC, out_d
     return out_path
 
 
+# ==================== ハイライトのカバー画像 ====================
+# 1080x1920。Instagramのカバー編集では中央に幅いっぱいの円で切り抜かれるため、
+# 文字は円の内側（中央・幅700px以内）に収める。
+
+def draw_highlight_cover(bg_path, out_path, kicker, lines):
+    """lines = [(テキスト, フォントパス, 基本サイズ, 色), ...] を上下中央に積み上げる。"""
+    img = Image.open(bg_path).convert("RGB")
+    d = ImageDraw.Draw(img)
+    cx = STORY_TW // 2
+    max_w = 700
+
+    f_kicker = F(FONT_SANS_MED, 40)
+    items = []
+    for text, path, size, color in lines:
+        items.append((text, fit_font(path, size, [text], max_w), color))
+
+    gap_kicker = 36
+    gap_line = 8
+    total = lh(f_kicker, 1.3) + gap_kicker
+    total += sum(lh(f, 1.25) for _, f, _ in items) + gap_line * (len(items) - 1)
+
+    y = int((STORY_TH - total) / 2)
+    draw_c(d, cx, y, kicker, f_kicker, MG)
+    y += lh(f_kicker, 1.3) + gap_kicker
+    for text, f, color in items:
+        draw_c(d, cx, y, text, f, color)
+        y += lh(f, 1.25) + gap_line
+    img.save(out_path, quality=93)
+
+
+def build_highlight_covers(materials_dir=SRC, out_dir=OUT):
+    """ハイライトのカバー画像4枚（求人／雇用VSフリーランス／美容師さんへ／税金と保険）を生成する。"""
+    import os
+    os.makedirs(out_dir, exist_ok=True)
+    logo_path = f"{materials_dir}/logo.jpeg"
+    employee_gray = (95, 100, 112)
+
+    covers = [
+        ("recruit", "RECRUIT", [("求人", FONT_SERIF_SEMI, 230, DARK)]),
+        ("vs", "COMPARE", [
+            ("雇用", FONT_SERIF_SEMI, 150, employee_gray),
+            ("VS", FONT_SANS_MED, 64, GRAY),
+            ("フリーランス", FONT_SERIF_SEMI, 120, MG),
+        ]),
+        ("stylist", "FOR YOU", [("美容師さんへ", FONT_SERIF_SEMI, 130, DARK)]),
+        ("money", "MONEY", [("税金と保険", FONT_SERIF_SEMI, 140, DARK)]),
+    ]
+    paths = []
+    for i, (name, kicker, lines) in enumerate(covers):
+        bg_path = f"{out_dir}/cover_{name}_bg.jpg"
+        out_path = f"{out_dir}/cover_{name}.jpg"
+        make_story_logo_bg(logo_path, base_shade=224, seed=3100 + i, out_path=bg_path, watermark_opacity=0)
+        draw_highlight_cover(bg_path, out_path, kicker, lines)
+        os.remove(bg_path)
+        paths.append(out_path)
+    return paths
+
+
 if __name__ == "__main__":
     build_post7()
     print("post7 done")
