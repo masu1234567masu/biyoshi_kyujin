@@ -171,11 +171,15 @@ method (`assets/posts/story_recruit/story_recruit_final1.jpg`).
 original 17) show `PUBLISHED` in `getScheduledPosts` with real Instagram
 story URLs.** This batch posted after the archive setting was turned ON, so
 it should persist in the account's Archive this time (unlike the first
-attempt — see hard rule #11). User has been told it's their turn to manually
-create the Instagram Highlight; whether it's one Highlight or split by theme
-is still their call. Do not resume the paused feed-carousel cadence (rule #6
-above) until the user explicitly says so — this is the last open item
-blocking that.
+attempt — see hard rule #11).
+
+**✅ Initiative closed 2026-10-19**: user created the Highlights in the
+Instagram app, split by theme ("分野ごとに何個か作って"). Nothing left to do
+here. Rule #6's pause is lifted — **feed-carousel posting can resume once the
+user gives the go-ahead** (they haven't explicitly said "resume" yet as of
+2026-10-19; they're currently asking about overall direction, including a
+possible Threads expansion — see `docs/handover.md`'s 2026-10-19 entry. Don't
+assume resumption — confirm with the user first).
 7. **Every feed carousel post also gets an Instagram Story cross-post**,
    added 2026-09-23 per user request (previously undisclosed that Metricool
    even supports Stories — don't make that omission again). Reuse the
